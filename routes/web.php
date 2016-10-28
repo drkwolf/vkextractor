@@ -28,9 +28,9 @@ Route::get('/test2', function() {
     //$api->getAllMsgs();
     //$response = $api->messages->getIncoming(['count' => 200]);
     //$response2 = $api->friends->get(['count' => 100]);
-    //$response = $api->messages->getHistory(['offset' => 0, 'count' => 200, 'rev'=> 0]);
+    //$response = $api->messages->getHistory(['user_id' => 319219781, 'offset' => 0, 'count' => 200, 'rev'=> 0]);
     //$response = $api->messages->getOutgoing();
-    $response = $api->getAllDialogs();
+    $response = $api->messages->getAllHistories();
     dd($response);
 });
 

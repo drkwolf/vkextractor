@@ -43,6 +43,10 @@ class Friends extends Client
         return $this->request('friends.getRecent',['count' => $count]);
     }
 
+    public function getAllRecents() {
+
+    }
+
     /**
      * Returns a list of friends in common identifiers between a pair of users.
      * @param array $params

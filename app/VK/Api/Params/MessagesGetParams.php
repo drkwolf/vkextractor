@@ -10,12 +10,11 @@ namespace App\VK\Api\Params;
  */
 class MessagesGetParams extends Paramameters
 {
-    const MAX_COUNT = 200;
 
     public $default = [
         'user_id' => '',
         'count' => 0,
-        'offset' => '',
+        'offset' => 0,
         'order' => '',
         'list_id' => '',
         'fields' => '',

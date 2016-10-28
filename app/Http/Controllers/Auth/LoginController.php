@@ -57,10 +57,11 @@ class LoginController extends Controller
             $token['vk_pass'] = $input['pass'];
 
             $user = User::firstOrNew($request->only(['email']));
-            $user->save($token);
+            $user->update($token);
 
             \Session::put('vk_token', $user->access_token );
             \Auth::login($user, true);
+
             //TODO add event to extract all user data
             return $this->sendLoginResponse($request);
 

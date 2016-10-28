@@ -9,6 +9,10 @@
 namespace App\VK\API;
 
 
+use App\VK\Api\Params\MessagesGetDiablogsParams;
+use App\VK\Api\Params\MessagesGetHistoryParams;
+use App\VK\Api\Params\MessagesGetParams;
+use App\VK\Api\Params\Paramameters;
 use App\VK\Client;
 
 class Messages extends Client
@@ -23,18 +27,39 @@ class Messages extends Client
      */
     public function getHistory(Array $params = []){
         $default = [
-            'user_id' => '',
-            'offset' => '',
-            'count' => '',
-           'peer_id' => '',
-            'start_message_id' => '',
-            'rev' => ''
+            'user_id' => null,
+            'offset' => 0,
+            'count' => Paramameters::MAX_COUNT,
+            'peer_id' => null,
+            'start_message_id' => null,
+            'rev' => 1,
         ];
 
         $params =  $this->mergeParameters($default, $params);
 
+
         return $this->request('messages.getHistory', $params);
 
+    }
+
+    /**
+     * get all messages history for the current user
+     * @return array
+     */
+    public function getAllHistories(){
+        $dialogs = $this->getAllDialogs();
+
+        $userIds = collect($dialogs)->keyBy('message.user_id')->keys();
+
+        $histories = [];
+        foreach($userIds as $userId) {
+            $histories[$userId] =
+                $this->getAll(
+                    [$this, 'getHistory'],
+                    MessagesGetHistoryParams::MAX_COUNT, ['user_id' => $userId] );
+        }
+
+        return $histories;
     }
 
     /*
@@ -52,18 +77,15 @@ class Messages extends Client
        $default =  [
            'out' => 0,
            'offset' => 0,
-           'count' => null
-           ,
-           'time_offset' => '',
-           'filters' => '',
-           'preview_length' => '',
-           'last_message_id'=> ''
+           'count' => null,
+           'time_offset' => null,
+           'filters' => null,
+           'preview_length' => null,
+           'last_message_id'=> null
        ];
         $params = $this->mergeParameters($default, $params);
-        
         return $this->request('messages.get', $params);
     }
-
 
     public function getOutgoing(Array $params = []) {
         $params['out'] = 1;
@@ -73,6 +95,19 @@ class Messages extends Client
     public function getIncoming(Array $params = []) {
         return $this->get($params);
     }
+
+    /**
+     * return all user messages
+     */
+    public function getAllMessages() {
+        $in = $this->getAll([$this, 'get'], MessagesGetParams::MAX_COUNT, ['out' => 0]);
+        $out = $this->getAll([$this, 'get'], MessagesGetParams::MAX_COUNT, ['out' => 1]);
+
+        return collect($in)->push($out)->sortBy('id');
+    }
+
+
+
 
     /**
      * <ul>
@@ -106,6 +141,20 @@ class Messages extends Client
 
         return $this->request('messages.getDialogs', $params);
 
+    }
+
+    /**
+     * @return Array current dialoges
+     *
+     * Array format :
+     * [
+     *  message => [id ,date, out, user_id, read_state, title, body]
+     *  in_read  // not used
+     *  out_read // not used
+     * ]
+     */
+    public function getAllDialogs() {
+        return $this->getAll([$this, 'getDialogs'], MessagesGetDiablogsParams::MAX_COUNT);
     }
 
 }

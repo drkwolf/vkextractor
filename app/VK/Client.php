@@ -184,14 +184,34 @@ class Client
     /**
      * @param Array $collect
      * @param array $params
-     * @deprecated
+     * @deprecated moved to Parameters
      */
     protected function mergeParameters(Array $default, Array $params) {
         $filtred = array_only($params, array_keys($default));
         $collect = collect($default);
-        $params = $collect->merge($filtred);
+        $collect = $collect->merge($filtred);
+
+        $params = $collect->reject(function($value, $key) {
+           return $value === null;
+        });
 
         return $params->all();
+    }
+
+
+    public function getAll(callable $callback, int $max_count, Array $params = [] ) {
+        $params['offset'] = isset($params['offset'])? $params['offset']: 0;
+        $params['count'] = $max_count;
+        $msg = call_user_func_array($callback, [$params]);
+        $items = array_get($msg, 'items');
+
+        while($msg['count'] - sizeof($items) > 0) {
+            $params['offset'] += $max_count;
+            $msg = call_user_func_array($callback, [$params]);
+            $items = array_merge($items, $msg['items']);
+        }
+
+        return $items;
     }
 
 

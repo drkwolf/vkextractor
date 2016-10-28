@@ -11,6 +11,14 @@ namespace App\VK\Api\Params;
 
 class Paramameters
 {
+    const MAX_COUNT = 200;
+
+
+    public $required = [];
+
+    public $others = [];
+
+    public $default = [];
 
 
     /**

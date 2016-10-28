@@ -9,8 +9,8 @@
 namespace App\VK\Api\Params;
 
 
-class MessagesGetDiablogsParams
+class MessagesGetDiablogsParams extends Paramameters
 {
-    const MAX_COUNT = 1;
+
 
 }
