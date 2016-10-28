@@ -6,7 +6,7 @@
  * Time: 3:18 PM
  */
 
-namespace App\VK;
+namespace App\VK\Auth;
 
 use App\VK\Contracts\AuthInterface;
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;

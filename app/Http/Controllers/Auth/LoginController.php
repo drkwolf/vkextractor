@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
-use App\VK\AuthCrawler;
+use App\VK\Auth\AuthCrawler;
 use App\VK\Exceptions\AuthorizationFailedVkException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;

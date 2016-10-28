@@ -1,6 +1,6 @@
 <?php
 
-namespace  App\VK;
+namespace  App\VK\Auth;
 
 use Goutte\Client as HttpClient;
 use App\VK\Exceptions\AuthorizationFailedVkException;
