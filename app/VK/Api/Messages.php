@@ -13,7 +13,7 @@ use App\VK\Api\Params\MessagesGetDiablogsParams;
 use App\VK\Api\Params\MessagesGetHistoryParams;
 use App\VK\Api\Params\MessagesGetParams;
 use App\VK\Api\Params\Paramameters;
-use App\VK\Client;
+use App\VK\Api\Client;
 
 class Messages extends Client
 {

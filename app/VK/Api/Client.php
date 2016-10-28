@@ -6,7 +6,7 @@
  * Time: 1:55 PM
  */
 
-namespace App\VK;
+namespace App\VK\Api;
 
 
 use App\User;
@@ -22,6 +22,7 @@ use Psr\Http\Message\ResponseInterface;
  * It's important to use this class throut job Queue
  * Class Client
  * @package App\VK
+ * //TODO client must support 1. authusers (standalone, OAUTH), App (
  */
 class Client
 {

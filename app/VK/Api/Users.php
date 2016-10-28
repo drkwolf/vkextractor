@@ -9,7 +9,7 @@
 namespace App\VK\Api;
 
 
-use App\VK\Client;
+use App\VK\Api\Client;
 
 class Users extends Client
 {
