@@ -6,7 +6,7 @@ use Goutte\Client as HttpClient;
 use App\VK\Exceptions\AuthorizationFailedVkException;
 use Exception;
 
-use App\VK\AbstractAuth;
+use App\VK\Auth\AbstractAuth;
 
 /**
  * Authenticate user using Crawler client
