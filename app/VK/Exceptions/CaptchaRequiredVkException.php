@@ -14,7 +14,6 @@ namespace App\VK\Exceptions;
 /**
  * Class CaptchaRequiredVkException
  *
- * @package ATehnix\VkClient
  */
 class CaptchaRequiredVkException extends VkException
 {

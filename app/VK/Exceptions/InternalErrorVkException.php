@@ -14,7 +14,6 @@ namespace App\VK\Exceptions;
 /**
  * Class InternalErrorVkException
  *
- * @package ATehnix\VkClient
  */
 class InternalErrorVkException extends VkException
 {

@@ -9,27 +9,33 @@
 namespace App\VK\Api;
 
 
-use App\VK\Api\Client;
+use App\VK\Api\ClientAbstract;
+use App\VK\Api\Params\MessagesGetParams;
 
-class Friends extends Client
+class Friends
 {
+    protected $client;
+
+    public function __construct(ClientAbstract $client) {
+        $this->client = $client;
+    }
 
     /**
      * @link [https://vk.com/dev/friends.get] [<friends.get>]
      * @param array $params
-     * @return Array
+     * @return array
      */
     public function get(Array $params = []) {
         $default = [
-            'user_id' => $this->getUserId(),
-            'count' => '',
-            'order' => '', 'list_id' => '',
-            'offset' => '', 'fields' => '',
-            'name_case' => '', 'flatten' => FALSE,
+            'user_id' => $this->client->getUserId(),
+            'count' => null,
+            'order' => null,
+            'list_id' => null,
+            'offset' => null, 'fields' => null,
+            'name_case' => null, 'flatten' => FALSE,
         ];
 
-        $params =  $this->mergeParameters($default, $params);
-        return $this->request('friends.get', $params);
+        return $this->client->request('friends.get', $default, $params);
 
     }
 
@@ -39,18 +45,22 @@ class Friends extends Client
      * @return Array
      * @link [https://vk.com/dev/friends.getRecent] [<friends.getRecent>]
      */
-    public function getRecents(int $count = 100) {
-        return $this->request('friends.getRecent',['count' => $count]);
+    public function getRecent(Array $params = []) {
+        $default = [
+            'count' => 100,
+        ];
+
+        return $this->client->request('friends.getRecent', $default, $params);
     }
 
-    public function getAllRecents() {
-
+    public function getAllRecent() {
+        return $this->client->getAll([$this, 'getRecent'], MessagesGetParams::MAX_COUNT);
     }
 
     /**
      * Returns a list of friends in common identifiers between a pair of users.
      * @param array $params
-     * @return Array
+     * @return array
      *  <ul>
      * <li> SourceUid - User ID whose friends intersect with a user ID with friends target_uid. If not specified,
      *      it is considered that source_uid ID is the current user. positive number a default user identifier of
@@ -77,8 +87,7 @@ class Friends extends Client
                 'offset' => ''
             ];
 
-            $params =  $this->mergeParameters($default, $params);
-            return $this->request('friends.getMitual',$params);
+            return $this->client->request('friends.getMitual', $default, $params);
         }
 
 }

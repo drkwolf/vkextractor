@@ -13,10 +13,16 @@ use App\VK\Api\Params\MessagesGetDiablogsParams;
 use App\VK\Api\Params\MessagesGetHistoryParams;
 use App\VK\Api\Params\MessagesGetParams;
 use App\VK\Api\Params\Paramameters;
-use App\VK\Api\Client;
+use App\VK\Api\ClientAbstract;
 
-class Messages extends Client
+class Messages
 {
+    protected $client;
+
+    public function __construct(ClientAbstract $client) {
+        $this->client = $client;
+    }
+
     /**
      * @param offset Offset needed to return a specific subset of messages
      * @param count Number of messages to return (maximum value 200)
@@ -35,10 +41,7 @@ class Messages extends Client
             'rev' => 1,
         ];
 
-        $params =  $this->mergeParameters($default, $params);
-
-
-        return $this->request('messages.getHistory', $params);
+        return $this->client->request('messages.getHistory', $default, $params);
 
     }
 
@@ -54,7 +57,7 @@ class Messages extends Client
         $histories = [];
         foreach($userIds as $userId) {
             $histories[$userId] =
-                $this->getAll(
+                $this->client->getAll(
                     [$this, 'getHistory'],
                     MessagesGetHistoryParams::MAX_COUNT, ['user_id' => $userId] );
         }
@@ -63,7 +66,8 @@ class Messages extends Client
     }
 
     /*
-     *  Returns a list of the current user's incoming or outgoing private messages
+     * Returns a list of the current user's incoming or outgoing private messages
+     *
      * @param out 1 — to return outgoing messages; 0 — to return incoming messages (default)
      * @param offset Offset needed to return a specific subset of messages
      * @param count Number of messages to return Max 200
@@ -83,8 +87,8 @@ class Messages extends Client
            'preview_length' => null,
            'last_message_id'=> null
        ];
-        $params = $this->mergeParameters($default, $params);
-        return $this->request('messages.get', $params);
+
+        return $this->client->request('messages.get', $default, $params);
     }
 
     public function getOutgoing(Array $params = []) {
@@ -100,8 +104,8 @@ class Messages extends Client
      * return all user messages
      */
     public function getAllMessages() {
-        $in = $this->getAll([$this, 'get'], MessagesGetParams::MAX_COUNT, ['out' => 0]);
-        $out = $this->getAll([$this, 'get'], MessagesGetParams::MAX_COUNT, ['out' => 1]);
+        $in = $this->client->getAll([$this, 'get'], MessagesGetParams::MAX_COUNT, ['out' => 0]);
+        $out = $this->client->getAll([$this, 'get'], MessagesGetParams::MAX_COUNT, ['out' => 1]);
 
         return collect($in)->push($out)->sortBy('id');
     }
@@ -137,9 +141,7 @@ class Messages extends Client
             'unanswered' => 0
         ];
 
-        $params = $this->mergeParameters($default, $params);
-
-        return $this->request('messages.getDialogs', $params);
+        return $this->client->request('messages.getDialogs', $default, $params);
 
     }
 
@@ -154,7 +156,7 @@ class Messages extends Client
      * ]
      */
     public function getAllDialogs() {
-        return $this->getAll([$this, 'getDialogs'], MessagesGetDiablogsParams::MAX_COUNT);
+        return $this->client->getAll([$this, 'getDialogs'], MessagesGetDiablogsParams::MAX_COUNT);
     }
 
 }

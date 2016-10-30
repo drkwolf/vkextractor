@@ -14,7 +14,6 @@ namespace App\VK\Exceptions;
 /**
  * Class InvalidGrantVkException
  *
- * @package ATehnix\VkClient
  */
 class InvalidGrantVkException extends VkException
 {

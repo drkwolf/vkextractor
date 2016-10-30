@@ -9,7 +9,8 @@
 namespace App\VK;
 
 
-use App\User;
+use App\Models\User;
+use App\VK\Api\ClientStandalone;
 use App\VK\Api\Friends;
 use App\VK\Api\Messages;
 use App\VK\Api\Params\MessagesGetDiablogsParams;
@@ -17,7 +18,7 @@ use App\VK\Api\Params\MessagesGetHistoryParams;
 use App\VK\Api\Params\MessagesGetParams;
 use App\VK\Api\Users;
 
-class Api
+class ApiStandalone
 {
     public $friends;
     public $messages;
@@ -25,9 +26,10 @@ class Api
 
 
     public function __construct(User $user) {
-        $this->friends = new Friends($user);
-        $this->messages = new Messages($user);
-        $this->users = new Users($user);
+        $client = new ClientStandalone($user);
+        $this->friends = new Friends($client);
+        $this->messages = new Messages($client);
+        $this->users = new Users($client);
     }
 
 }

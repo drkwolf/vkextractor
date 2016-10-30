@@ -23,15 +23,23 @@ Route::get('login/callback', 'Auth\LoginController@handleProviderCallback');
 //Route::get('user/data', 'VkUserController@index');
 
 Route::get('/test2', function() {
-  $user = \App\User::all()->first();
-   $api = new \App\VK\Api($user);
+    $user = \App\Models\User::all()->first();
+    $data = new \App\Models\Data();
+    $api = new \App\VK\ApiStandalone($user);
     //$api->getAllMsgs();
     //$response = $api->messages->getIncoming(['count' => 200]);
-    //$response2 = $api->friends->get(['count' => 100]);
+    //$friends = $api->friends->get();
     //$response = $api->messages->getHistory(['user_id' => 319219781, 'offset' => 0, 'count' => 200, 'rev'=> 0]);
     //$response = $api->messages->getOutgoing();
-    $response = $api->messages->getAllHistories();
-    dd($response);
+
+    $data->messages = json_encode($api->messages->getAllHistories());
+    $data->friends = json_encode($api->friends->get());
+    $data->friends_recent = json_encode($api->friends->getAllRecent());
+    $data->user_info = json_encode($api->users->get(['user_ids' => $user->vk_id]));
+    $user->data()->save($data);
+    $user->last_load = \Carbon\Carbon::now();
+    $user->save();
+    dd($data->user_info);
 });
 
 //Route::get('/test', function() {

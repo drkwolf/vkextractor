@@ -9,10 +9,15 @@
 namespace App\VK\Api;
 
 
-use App\VK\Api\Client;
+use App\VK\Api\ClientAbstract;
 
-class Users extends Client
+class Users
 {
+    protected $client;
+
+    public function __construct(ClientAbstract $client) {
+        $this->client = $client;
+    }
 
     /**
      * @param array $params
@@ -22,13 +27,12 @@ class Users extends Client
     public function get(Array $params = []) {
         $default = [
             'user_ids' => null,
-            'fields' => ['sex', 'city', 'country', 'universities','verified', 'home_town', 'education', 'universities',
+            'fields' => ['sex', 'city', 'photo_50', 'country', 'universities','verified', 'home_town', 'education', 'universities',
                             'schools', 'common_count', 'personal', 'blacklisted'],
             'name_case' => 'nom',
         ];
 
-        $params =  $this->mergeParameters($default, $params);
-        return $this->request('users.get', $params);
+        return $this->client->request('users.get', $default, $params);
     }
 
 }

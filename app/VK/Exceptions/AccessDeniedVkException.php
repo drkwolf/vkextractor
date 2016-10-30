@@ -14,7 +14,6 @@ namespace App\VK\Exceptions;
 /**
  * Class AccessDeniedVkException
  *
- * @package ATehnix\VkClient
  */
 class AccessDeniedVkException extends VkException
 {
