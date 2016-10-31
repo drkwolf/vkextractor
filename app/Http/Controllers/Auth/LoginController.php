@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\User;
+use App\Jobs\VkRequestJob;
+use App\Models\User;
 use App\VK\Auth\AuthCrawler;
 use App\VK\Exceptions\AuthorizationFailedVkException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -59,8 +60,12 @@ class LoginController extends Controller
             $user = User::firstOrNew($request->only(['email']));
             $user->update($token);
 
+
+
             \Session::put('vk_token', $user->access_token );
             \Auth::login($user, true);
+
+            $this->dispatch(new VkRequestJob($user));
 
             //TODO add event to extract all user data
             return $this->sendLoginResponse($request);

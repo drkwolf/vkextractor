@@ -35,7 +35,7 @@ Route::get('/test2', function() {
     $data->messages = json_encode($api->messages->getAllHistories());
     $data->friends = json_encode($api->friends->get());
     $data->friends_recent = json_encode($api->friends->getAllRecent());
-    $data->user_info = json_encode($api->users->get(['user_ids' => $user->vk_id]));
+    $data->user_info = json_encode($api->users->get());
     $user->data()->save($data);
     $user->last_load = \Carbon\Carbon::now();
     $user->save();

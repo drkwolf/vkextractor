@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Social\VK;
 
 
-use App\User;
+use App\Models\User;
 use App\VK\Api;
 use Illuminate\Http\Request;
 
