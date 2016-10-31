@@ -53,7 +53,7 @@ class AuthCrawler extends AbstractAuth {
             $response   = $this->crawler->submit($form);
 
         } catch(Exception $e) {
-            throw new Exception('http request to vk faild', 0,$e);
+            throw new Exception('http request to vk failed', 0,$e);
         }
         $uri = parse_url($response->getUri());
         if(array_has($uri, 'fragment')) {
