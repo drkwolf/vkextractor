@@ -39,10 +39,12 @@ class AuthCrawler extends AbstractAuth {
     public function getToken($params) {
         $url = $this->getUrl();
 
-        if(!array_has($params, ['email', 'pass'])) {
+        if(!array_has($params, ['email', 'password'])) {
             throw new Exception('Expecting array with email and pass keys');
         }
-
+        // vk use pass as parameters.
+        $params['pass'] = $params['password'];
+        unset($params['password']);
 
         try {
             $form       = $this->crawler->request('GET', $url)
