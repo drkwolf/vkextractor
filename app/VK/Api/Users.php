@@ -23,6 +23,7 @@ class Users
      * @param array $params
      * @link [https://vk.com/dev/users.get]
      * @link [https://vk.com/dev/fields]
+     * @return array
      */
     public function get(Array $params = []) {
         $default = [

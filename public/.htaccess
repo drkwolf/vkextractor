@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    # Fix authentication headers
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    #RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)/$ /$1 [L,R=301]
@@ -15,6 +19,6 @@
     RewriteRule ^ index.php [L]
 
     # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
+#    RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 </IfModule>

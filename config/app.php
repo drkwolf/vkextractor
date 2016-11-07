@@ -114,7 +114,7 @@ return [
     |
     | Here you may configure the log settings for your application. Out of
     | the box, Laravel uses the Monolog PHP logging library. This gives
-    | you a variety of powerful log handlers / formatters to utilize.
+    | you a variety of powerful log handleLaravel\Passport\PassportServiceProvider::class,rs / formatters to utilize.
     |
     | Available Settings: "single", "daily", "syslog", "errorlog"
     |
@@ -166,8 +166,7 @@ return [
         /*
          * Package Service Providers...
          */
-
-        //
+        'Tymon\JWTAuth\Providers\JWTAuthServiceProvider',
 
         /*
          * Application Service Providers...
@@ -178,8 +177,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-       \SocialiteProviders\Manager\ServiceProvider::class, // add
-//        Laravel\Socialite\SocialiteServiceProvider::class, //add
 
     ],
 
@@ -229,7 +226,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        'Socialite' => Laravel\Socialite\Facades\Socialite::class, //add
+        //package facdes
+        'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth', //JWT Laravel
     ],
 
 ];

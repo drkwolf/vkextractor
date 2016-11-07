@@ -82,12 +82,14 @@ class Friends
      */
         public function getMutual(Array $params = []) {
             $default = [
-                'source_id' => '' , 'target_uid' => '',
-                'target_uids' => '', 'order' => '', 'count' => '',
+                'source_id' => $this->client->getUserId(),
+                'target_uid' => '',
+                'target_uids' => '',
+                'order' => '', 'count' => '',
                 'offset' => ''
             ];
 
-            return $this->client->request('friends.getMitual', $default, $params);
+            return $this->client->request('friends.getMutual', $default, $params);
         }
 
 }

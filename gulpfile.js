@@ -2,6 +2,10 @@ const elixir = require('laravel-elixir');
 
 require('laravel-elixir-vue-2');
 
+if(elixir.config.production == true){
+    process.env.NODE_ENV = 'production';
+}
+
 /*
  |--------------------------------------------------------------------------
  | Elixir Asset Management
@@ -15,5 +19,5 @@ require('laravel-elixir-vue-2');
 
 elixir(mix => {
     mix.sass('app.scss')
-       .webpack('app.js');
+       .webpack('main.js');
 });

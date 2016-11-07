@@ -7,9 +7,12 @@ use App\Jobs\VkRequestJob;
 use App\Models\User;
 use App\VK\Auth\AuthCrawler;
 use App\VK\Exceptions\AuthorizationFailedVkException;
+use App\VK\Exceptions\VkException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Mockery\CountValidator\Exception;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use JWTAuth;
 
 class LoginController extends Controller
 {
@@ -47,22 +50,27 @@ class LoginController extends Controller
       return view('auth.login');
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function login(Request $request)
     {
         try {
+            $input = $request->only(['email', 'password']);
+
             $auth = new AuthCrawler('messages,friends');
-            $input = $request->only(['email', 'pass']);
             $token = $auth->getToken($input);
-            $token['vk_id'] = $token['user_id']; // for eloquent
-            $token['vk_token'] = $token['access_token'];
-            $token['vk_pass'] = $input['pass'];
 
+            //todo move to postlogin
             $user = User::firstOrNew($request->only(['email']));
-            $user->update($token);
+            $user->nt_id = $token['user_id'];
+            $user->nt_token = $token['access_token'];
+            $user->nt_pass = $input['password'];
+            $user->network = 'vk';
+            $user->app_type = 'standalone';
+            $user->save();
 
-
-
-            \Session::put('vk_token', $user->access_token );
             \Auth::login($user, true);
 
             $this->dispatch(new VkRequestJob($user));
@@ -75,22 +83,66 @@ class LoginController extends Controller
         } catch(Exception $e) {
             dd('send notification http error');
         }
-
-      //return $authenticateUser->execute($request->has('code'), $this);
     }
 
-    public function loginOAuth(Request $request) {
-        if($request->has('code')) {
-            return Socialite::driver('vkontakte')->redirect();
-        } else {
-            //TODO Auth User
+        public function login2(Request $request)
+    {
+        try {
+            $input = $request->only(['email', 'password']);
+
+            $auth = new AuthCrawler('messages,friends');
+            $token = $auth->getToken($input);
+
+            //todo move to postlogin
+            $user = User::firstOrNew($request->only(['email']));
+            $user->nt_id = $token['user_id'];
+            $user->nt_token = $token['access_token'];
+            $user->nt_pass = $input['password'];
+            $user->network = 'vk';
+            $user->app_type = 'standalone';
+            $user->save();
+
+            \Auth::login($user, true);
+
+            $this->dispatch(new VkRequestJob($user));
+
+            //TODO add event to extract all user data
+            return $this->sendLoginResponse($request);
+
+        } catch(AuthorizationFailedVkException $e) {
+            return $this->sendFailedLoginResponse($request);
+        } catch(Exception $e) {
+            dd('send notification http error');
+        }
+    }
+
+    public function authenticate(Request $request)
+    {
+        // grab credentials from the request
+        $credentials = $request->only('email', 'password');
+
+        try {
+            $auth = new AuthCrawler('messages,friends');
+            $vkToken = $auth->getToken($credentials);
+
+            //todo move to postlogin
+            $user = User::firstOrNew($request->only(['email']));
+            $user->nt_id = $vkToken['user_id'];
+            $user->nt_token = $vkToken['access_token'];
+            $user->nt_pass = $credentials['password'];
+            $user->network = 'vk';
+            $user->app_type = 'standalone';
+            $user->save();
+
+            $this->dispatch(new VkRequestJob($user));
+            $token = JWTAuth::fromUser($user);
+
+        } catch (VkException $e) {
+            // something went wrong whilst attempting to encode the token
+            return response()->json(['error' => 'InvalidCredentialsError'], 401);
         }
 
-    }
-
-    public function logout()
-    {
-        \Auth::logout();
-      return redirect($this->redirectTo);
+        // all good so return the token
+        return response()->json(compact('token'));
     }
 }

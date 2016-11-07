@@ -51,8 +51,9 @@ class Messages
      */
     public function getAllHistories(){
         $dialogs = $this->getAllDialogs();
+        $items = array_get($dialogs, 'items');
 
-        $userIds = collect($dialogs)->keyBy('message.user_id')->keys();
+        $userIds = collect($items)->keyBy('message.user_id')->keys();
 
         $histories = [];
         foreach($userIds as $userId) {
@@ -62,7 +63,7 @@ class Messages
                     MessagesGetHistoryParams::MAX_COUNT, ['user_id' => $userId] );
         }
 
-        return $histories;
+        return ['count' => $dialogs['count'], 'items' => $histories];
     }
 
     /*
@@ -102,12 +103,15 @@ class Messages
 
     /**
      * return all user messages
+     * @deprecated use getAllHistories
      */
     public function getAllMessages() {
         $in = $this->client->getAll([$this, 'get'], MessagesGetParams::MAX_COUNT, ['out' => 0]);
         $out = $this->client->getAll([$this, 'get'], MessagesGetParams::MAX_COUNT, ['out' => 1]);
+        $count = $in['count'] + $out['count'];
+        $items = collect($in['items'])->push($out['items'])->sortByDesc('date')->all();
 
-        return collect($in)->push($out)->sortBy('id');
+        return compact('count', 'items');
     }
 
 

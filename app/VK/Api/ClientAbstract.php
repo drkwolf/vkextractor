@@ -43,7 +43,7 @@ abstract class ClientAbstract implements ClientInterface
     protected $app_type;
 
     private $user_id;
-    private $access_token;
+    private $nt_token;
 
 
     public function __construct($version = null) {
@@ -77,15 +77,15 @@ abstract class ClientAbstract implements ClientInterface
 
      public function setToken(String $token)
      {
-         $this->access_token = $token;
+         $this->nt_token = $token;
      }
 
     public function getToken()
     {
-        if(!isset($this->access_token)) {
+        if(!isset($this->nt_token)) {
             throw new RequiredParameterException("Parameter access_token is not set");
         }
-        return $this->access_token;
+        return $this->nt_token;
     }
 
     /**
@@ -107,7 +107,6 @@ abstract class ClientAbstract implements ClientInterface
 
         try {
             $response = $this->http->post($method, $params);
-
         } catch(TooManyRequestsVkException $e ) {
             usleep(static::WAIT_AFTER_REQ_ERROR); // .5 second
             $response = $this->http->post($method, $params); //send it again
@@ -152,19 +151,18 @@ abstract class ClientAbstract implements ClientInterface
     public function getAll(callable $callback, int $max_count, Array $params = [] ) {
         $params['offset'] = isset($params['offset'])? $params['offset']: 0;
         $params['count'] = $max_count;
-        $msg = call_user_func_array($callback, [$params]);
-        $items = array_get($msg, 'items');
 
-        //
-        if(!isset($msg['count'])) return $msg;
+        $msg = call_user_func_array($callback, [$params]); //send first request
+        $items = array_get($msg, 'items', $msg);
+        $count = array_get($msg, 'count', sizeof($items));
 
-        while($msg['count'] - sizeof($items) > 0) {
+        while($count - sizeof($items) > 0) {
             $params['offset'] += $max_count;
             $msg = call_user_func_array($callback, [$params]);
             $items = array_merge($items, $msg['items']);
         }
 
-        return $items;
+        return compact('count', 'items');
     }
 
     /**
@@ -179,6 +177,7 @@ abstract class ClientAbstract implements ClientInterface
         $this->checkErrors($data);
 
         return $data['response'];
+
     }
 
     /**
@@ -220,5 +219,5 @@ abstract class ClientAbstract implements ClientInterface
         $exception = isset($map[$code]) ? $map[$code] : $map[0];
 
         return new $exception($message, $code);
+        }
     }
-}

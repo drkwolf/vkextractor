@@ -11,15 +11,17 @@
         "laravel/socialite": "^2.0",
         "guzzlehttp/guzzle": "^6.2",
         "fabpot/goutte": "^3.1",
-        "barryvdh/laravel-ide-helper": "^2.2",
-        "doctrine/dbal": "^2.5"
+        "doctrine/dbal": "^2.5",
+        "tymon/jwt-auth": "0.5.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~5.0",
         "symfony/css-selector": "3.1.*",
-        "symfony/dom-crawler": "3.1.*"
+        "symfony/dom-crawler": "3.1.*",
+        "barryvdh/laravel-ide-helper": "^2.2",
+        "tremby/laravel-queue-monitor": "^2.3"
     },
     "autoload": {
         "classmap": [

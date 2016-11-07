@@ -21,6 +21,7 @@ use App\VK\Exceptions\VkException;
 
 use App\Models\User;
 
+use Carbon\Carbon;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 
@@ -40,13 +41,12 @@ class ClientStandalone extends ClientAbstract
 
     protected $version;
 
-
-    public function __construct(User $user, $version = null) {
+    public function __construct(User $user,$version = null) {
         parent::__construct($version);
 
         $this->user = $user;
-        $this->setToken($user->vk_token);
-        $this->setUserId($user->vk_id);
+        $this->setToken($user->nt_token);
+        $this->setUserId($user->nt_id);
 
         if ($this->isTokenExpired()) {
             throw new TokenExpiredException('Token has expired');
@@ -60,7 +60,7 @@ class ClientStandalone extends ClientAbstract
      * @return bool
      */
     protected function isTokenExpired() {
-        $now = \Carbon\Carbon::now();
+        $now = Carbon::now();
         $diff = $now->diffInSeconds($this->user->updated_at);
         return ((int)$this->user->expires_in < $diff);
     }

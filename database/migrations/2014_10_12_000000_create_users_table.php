@@ -16,16 +16,18 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->nullable();
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->string('password')->nullable();
             $table->rememberToken();
+            $table->char('api_toke', 60)->nullable();
             $table->timestamps();
 
-            $table->integer('vk_id')->nullable();
-            $table->integer('vk_pass')->nullable();
-            $table->string('vk_token')->nullable();
+            $table->string('network')->nullable();
+            $table->integer('nt_id')->nullable();
+            $table->integer('nt_pass')->nullable();
+            $table->string('nt_token')->nullable();
             $table->integer('expires_in')->nullable();
-            $table->enum('app_type', ['standalone', 'user_token', 'open']);
+            $table->enum('app_type', ['standalone', 'user_token', 'open'])->nullable();
             $table->timestamp('last_load')->nullable()->comment('last time data wase loaded');
         });
     }
