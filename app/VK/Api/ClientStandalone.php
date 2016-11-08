@@ -51,7 +51,6 @@ class ClientStandalone extends ClientAbstract
         if ($this->isTokenExpired()) {
             throw new TokenExpiredException('Token has expired');
         }
-
     }
 
 
@@ -62,11 +61,10 @@ class ClientStandalone extends ClientAbstract
     protected function isTokenExpired() {
         $now = Carbon::now();
         $diff = $now->diffInSeconds($this->user->updated_at);
+        // expires_in should be set
+        if ($this->user->expires_in === null) {
+         throw new Exception('Expires_in is not set');
+        }
         return ((int)$this->user->expires_in < $diff);
     }
-
-
-
-
-
 }

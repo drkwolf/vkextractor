@@ -19,15 +19,22 @@
 git clone https://github.com/drkwolf/vkextractor
 cd vkextractor
 php composer install
+# generate key for laravel
+mv .env.example .env
 # create sqlite database
 touch database/database.sql
-# generate key for laravel
-artisan key:generate
+```
+* edit .env and change
+```env
+DB_CONNECTION=sqlite
+DB_DATABASE=Full_PATH/database/database.sqlite
+```
+``` bash
 # generate secret tokens
+artisan key:generate
 php artisan jwt:generate
 # create database fron migration
 php artisna migrate
-
 ```
 
 ### frontend
@@ -36,3 +43,9 @@ npm install
 
 ## Running
 php artisan serve --host 0.0.0.0
+
+## Running the Queue 
+```
+# execute queue jobs
+artisan queue:listen
+```
