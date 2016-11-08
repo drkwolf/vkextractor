@@ -44,7 +44,7 @@
     mounted () {
       let self = this
       if (this.isAuthenticated) {
-        self.$router.push({path: '/'})
+        this.$store.commit('REDIRECT_TO', '/')
       }
     },
     methods: {

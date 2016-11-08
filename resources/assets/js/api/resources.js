@@ -6,10 +6,8 @@ import {API_ROOT} from '../config'
 
 Vue.use(VueResource)
 
-console.log('jere')
 Vue.http.options.root = API_ROOT
 Vue.http.headers.common['X-CSRF-TOKEN'] = document.getElementsByName('csrf-token')[0].getAttribute('content')
-console.log('jere')
 Vue.http.interceptors.push((request, next) => {
   next((response) => {
     if (response.status === 401) {
@@ -18,8 +16,6 @@ Vue.http.interceptors.push((request, next) => {
     }
   })
 })
-
-console.log(API_ROOT)
 
 // add resource if needed
 export const UserResource = Vue.resource('user{/id}')

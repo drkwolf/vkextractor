@@ -56,16 +56,16 @@
             <li class="dropdown notifications-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-bell-o"></i>
-                <span class="label label-warning">{{ state.notifications }}</span>
+                <span class="label label-warning">{{ notifications.count }}</span>
               </a>
               <ul class="dropdown-menu">
-                <li class="header">You have {{ state.notifications }} notifications</li>
+                <li class="header">You have {{ notifications.count }} notifications</li>
                 <li>
                   <!-- Inner Menu: contains the notifications -->
                   <ul class="menu">
-                    <li><!-- start notification -->
+                    <li v-for="item in notifications.items"><!-- start notification -->
                       <a href="#">
-                        <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                        <i class="fa fa-users text-aqua"></i> {{ item}}
                       </a>
                     </li>
                     <!-- end notification -->
@@ -79,10 +79,10 @@
             <li class="dropdown tasks-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-flag-o"></i>
-                <span class="label label-danger">{{ state.tasks }} </span>
+                <span class="label label-danger">{{ tasks.count }} </span>
               </a>
               <ul class="dropdown-menu">
-                <li class="header">You have {{ state.tasks }}  tasks</li>
+                <li class="header">You have {{ tasks.count }}  tasks</li>
                 <li>
                   <!-- Inner menu: contains the tasks -->
                   <ul class="menu">
@@ -233,16 +233,20 @@ module.exports = {
     state: function () {
       return this.store.state.auth.userInfo
     },
-    callAPI: function () {
-      return this.$parent.callAPI
+    notifications: function () {
+      return this.store.state.frontend.notifications
     },
-    demo: function () {
+    tasks: function () {
+      return this.store.state.frontend.tasks
+    },
+    demo: function () { // TODO change my name
       let data = this.state.user_info // change this
+      console.log(this.state)
       return {
-        displayName: data.first_name + ' ' + data.last_name,
+        displayName: data.first_name.concat(' ', data.last_name),
         avatar: data.photo_50,
-        email: faker.internet.email(),
-        randomCard: faker.helpers.createCard()
+        email: faker.internet.email()
+        //randomCard: faker.helpers.createCard()
       }
     }
   },

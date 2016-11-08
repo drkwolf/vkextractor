@@ -27,7 +27,7 @@ const login = function () {
         case 'LOGOUT':
           if (window.localStorage) {
             window.localStorage.removeItem('token')
-            Vue.http.headers.common['Authorization'] = null
+            Vue.http.headers.common['Authorization'] = ''
           }
       }
     })

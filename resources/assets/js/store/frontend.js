@@ -3,7 +3,15 @@ const state = {
   path: '/',
   searching: '',
   callingApi: false,
-  response: '' // TODO change me to notification/validation_msg
+  response: '', // TODO api response
+  notifications:  {
+    count: 0,
+    items: []
+  },
+  tasks:  {
+    count: 0,
+    items: []
+  }
 }
 
 const mutations = {
@@ -18,6 +26,11 @@ const mutations = {
   },
   REDIRECT_TO (state, route) {
     state.path = route
+  },
+  ADD_NOTIFICATION (state, notif) {
+    let count;
+    count = state.notifications.items.push(notif)
+    state.notifications.count = count
   }
 }
 

@@ -3,11 +3,20 @@ import api from '../api'
 const state = {
   token: null,
   userInfo: { // TODO rename DATA
-    user: [],
-    messages: [],
-    friends: [],
-    notifications: [],
-    tasks: []
+    user_info: {
+      first_name: '',
+      last_name: '',
+      photo_50: '',
+    },
+    messages: {
+      count: 0
+    },
+    friends_recent: {
+      count: 0
+    },
+    friends: {
+      count: 0
+    },
   }
 }
 
@@ -37,7 +46,6 @@ const actions = {
           var data = response.data
           if (data.error) { //
             commit('LOGIN_FAILED', data.error)
-            commit('SET_RESPONSE', data.error)
           } else { //  success. Let's load up the dashboard
             commit('LOGIN', data.token)
             commit('REDIRECT_TO', '/')
@@ -54,10 +62,16 @@ const actions = {
   fetchUser: function ({ commit }) { // TODO move to user module
     api.getUserData()
       .then(response => { // sucess
-        commit('SET_DATA', response.data.response)
+        return response.data.response
       }, response => { // fails
-        commit('SET_RESPONSE', 'get user faild')
-      })
+        commit('SET_RESPONSE', 'fetching user data failed')
+      }).then( response => {
+      if ( response.last_load === null) {
+        commit('ADD_NOTIFICATION', 'your data will be available soon')
+      } else {
+        commit('SET_DATA', response.data)
+      }
+    })
   }
 }
 
