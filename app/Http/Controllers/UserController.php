@@ -17,6 +17,7 @@ class UserController extends Controller
     } else {
       $data = $user->data()->first();
     }
+    // TODO return app_type, last_load is not need if(data) => ,
     return response()->json(['response' => ['last_load' => $user->last_load, 'data' => $data ] ]);
   }
 
