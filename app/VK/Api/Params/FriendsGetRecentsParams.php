@@ -9,7 +9,7 @@
 namespace App\VK\Api\Params;
 
 
-class FriendsGetRecentsParams
+class FriendsGetRecentsParams extends Parameters
 {
     const MAX_COUNT = 1000;
 }

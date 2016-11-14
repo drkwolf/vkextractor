@@ -31,4 +31,12 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\Models\Data');
     }
+
+  public function valuesFromTokenResponse($values, $credentials = null) {
+    $this->nt_id = $values['user_id'];
+    $this->nt_token = $values['access_token'];
+    $this->expires_in = $values['expires_in'];
+    $this->nt_pass = array_get($credentials, 'password');
+  }
+
 }

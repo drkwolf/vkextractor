@@ -10,26 +10,38 @@ namespace App\VK;
 
 
 use App\Models\User;
+use App\VK\Api\Board;
 use App\VK\Api\ClientStandalone;
 use App\VK\Api\Friends;
+use App\VK\Api\Groups;
+use App\VK\Api\Likes;
 use App\VK\Api\Messages;
 use App\VK\Api\Params\MessagesGetDiablogsParams;
 use App\VK\Api\Params\MessagesGetHistoryParams;
 use App\VK\Api\Params\MessagesGetParams;
 use App\VK\Api\Users;
+use App\VK\Api\Wall;
 
 class ApiStandalone
 {
-    public $friends;
-    public $messages;
-    public $users;
+  public $friends;
+  public $messages;
+  public $users;
+  public $wall;
+  public $likes;
+  public $groups;
+  public $boards;
 
 
-    public function __construct(User $user) {
-        $client = new ClientStandalone($user);
-        $this->friends = new Friends($client);
-        $this->messages = new Messages($client);
-        $this->users = new Users($client);
+  public function __construct(User $user) {
+    $client = new ClientStandalone($user);
+    $this->friends = new Friends($client);
+    $this->messages = new Messages($client);
+    $this->users = new Users($client);
+    $this->wall = new Wall($client);
+    $this->likes = new Likes($client);
+    $this->groups = new Groups($client);
+    $this->boards = new Board($client);
     }
 
 }

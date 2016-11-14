@@ -13,10 +13,10 @@ interface ClientInterface
 {
     const API_URI = 'https://api.vk.com/method/';
     const API_VERSION = '5.59';
-    const API_TIMEOUT = 30.0;
+    const API_TIMEOUT = 45.0;
 
     const REQ_BY_S = 3;
-    const WAIT_AFTER_REQ = 500000; // .5s
+    const WAIT_AFTER_REQ = 850000; // .85s
     const WAIT_AFTER_REQ_ERROR = 1000000; // 1s
 
 

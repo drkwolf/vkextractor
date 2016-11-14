@@ -9,7 +9,7 @@
 namespace App\VK\Api\Params;
 
 
-class MessagesGetHistoryParams extends Paramameters
+class MessagesGetHistoryParams extends Parameters
 {
 
     public $default = [

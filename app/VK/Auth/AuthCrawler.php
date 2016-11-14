@@ -60,7 +60,6 @@ class AuthCrawler extends AbstractAuth {
       }
 
     } catch(Exception $e) {
-      dd($e);
       throw new Exception('http request to vk failed', 0,$e);
     }
     $uri = parse_url($response->getUri());

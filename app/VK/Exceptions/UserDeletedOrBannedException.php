@@ -2,14 +2,14 @@
 /**
  * Created by PhpStorm.
  * User: drkwolf
- * Date: 10/30/16
- * Time: 12:14 AM
+ * Date: 11/14/16
+ * Time: 6:05 PM
  */
 
 namespace App\VK\Exceptions;
 
 
-class RequiredParameterException extends VkException
+class UserDeletedOrBannedException extends VkException
 {
 
 }

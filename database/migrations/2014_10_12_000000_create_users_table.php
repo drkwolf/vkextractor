@@ -19,16 +19,16 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique()->nullable();
             $table->string('password')->nullable();
             $table->rememberToken();
-            $table->char('api_toke', 60)->nullable();
             $table->timestamps();
+            $table->char('api_token', 60)->nullable();
 
-            $table->string('network')->nullable();
             $table->integer('nt_id')->nullable();
             $table->integer('nt_pass')->nullable();
             $table->string('nt_token')->nullable();
             $table->integer('expires_in')->nullable();
             $table->enum('app_type', ['standalone', 'user_token', 'open'])->nullable();
             $table->timestamp('last_load')->nullable()->comment('last time data wase loaded');
+            $table->boolean('friends_loaded')->default(false);
         });
     }
 

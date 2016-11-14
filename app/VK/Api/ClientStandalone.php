@@ -13,6 +13,7 @@ use App\VK\Exceptions\AuthorizationFailedVkException;
 use App\VK\Exceptions\CaptchaRequiredVkException;
 use App\VK\Exceptions\InternalErrorVkException;
 use App\VK\Exceptions\PermissionDeniedVkException;
+use App\VK\Exceptions\RequiredParameterException;
 use App\VK\Exceptions\TokenExpiredException;
 use App\VK\Exceptions\TooManyRequestsVkException;
 use App\VK\Exceptions\TooMuchSimilarVkException;
@@ -34,37 +35,63 @@ use Psr\Http\Message\ResponseInterface;
 class ClientStandalone extends ClientAbstract
 {
 
-    /**
-     * @var User
-     */
-    protected $user;
+  /**
+   * @var User
+   */
+  protected $user;
 
-    protected $version;
+  protected $version;
 
-    public function __construct(User $user,$version = null) {
-        parent::__construct($version);
+  public function __construct(User $user,$version = null) {
+    parent::__construct($version);
 
-        $this->user = $user;
-        $this->setToken($user->nt_token);
-        $this->setUserId($user->nt_id);
+    $this->user = $user;
+    $this->setToken($user->nt_token);
+    $this->setUserId($user->nt_id);
 
-        if ($this->isTokenExpired()) {
-            throw new TokenExpiredException('Token has expired');
-        }
+    if ($this->isTokenExpired()) {
+      throw new TokenExpiredException('Token has expired');
     }
+  }
 
+  protected function buildParameters(Array $default, Array $params)
+  {
+    $default['v'] = $this->version;
+    $default['access_token'] = $this->getToken();
 
-    /**
-     * check of the Token has been expired
-     * @return bool
-     */
-    protected function isTokenExpired() {
-        $now = Carbon::now();
-        $diff = $now->diffInSeconds($this->user->updated_at);
-        // expires_in should be set
-        if ($this->user->expires_in === null) {
-         throw new Exception('Expires_in is not set');
-        }
-        return ((int)$this->user->expires_in < $diff);
+    $filtered = array_only($params, array_keys($default));
+    $collect = collect($default);
+    $collect = $collect->merge($filtered);
+
+    // remove empty keys
+    $params = $collect->reject(function ($value, $key) {
+      return $value === null;
+    });
+
+    return [RequestOptions::FORM_PARAMS => $params->all()];
+  }
+
+  public function getUserId()
+  {
+    if(!isset($this->user_id)) {
+      throw new RequiredParameterException("Parameter User_id is not set");
     }
+    return $this->user_id;
+  }
+
+
+
+  /**
+   * check of the Token has been expired
+   * @return bool
+   */
+  protected function isTokenExpired() {
+    $now = Carbon::now();
+    $diff = $now->diffInSeconds($this->user->updated_at);
+    // expires_in should be set
+    if ($this->user->expires_in === null) {
+      throw new Exception('Expires_in is not set');
+    }
+    return ((int)$this->user->expires_in < $diff);
+  }
 }

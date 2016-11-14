@@ -9,7 +9,7 @@
 namespace App\VK\Api\Params;
 
 
-class MessagesGetDiablogsParams extends Paramameters
+class MessagesGetDiablogsParams extends Parameters
 {
 
 

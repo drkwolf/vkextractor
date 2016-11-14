@@ -15,13 +15,8 @@ use App\VK\Api\Params\MessagesGetParams;
 use App\VK\Api\Params\Paramameters;
 use App\VK\Api\ClientAbstract;
 
-class Messages
+class Messages extends ApiBase
 {
-    protected $client;
-
-    public function __construct(ClientAbstract $client) {
-        $this->client = $client;
-    }
 
     /**
      * @param offset Offset needed to return a specific subset of messages

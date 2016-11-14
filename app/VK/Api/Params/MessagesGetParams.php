@@ -8,18 +8,20 @@ namespace App\VK\Api\Params;
  * Date: 10/27/16
  * Time: 4:32 PM
  */
-class MessagesGetParams extends Paramameters
+class MessagesGetParams extends Parameters
 {
 
-    public $default = [
-        'user_id' => '',
-        'count' => 0,
-        'offset' => 0,
-        'order' => '',
-        'list_id' => '',
-        'fields' => '',
-        'name_case' => '',
-        'flatten' => FALSE,
-    ];
+  public $default = [
+    'user_id' => '',
+    'count' => 0,
+    'offset' => 0,
+    'order' => '',
+    'list_id' => '',
+    'fields' => '',
+    'name_case' => '',
+    'flatten' => FALSE,
+  ];
+
+
 
 }

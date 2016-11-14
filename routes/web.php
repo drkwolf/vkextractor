@@ -21,7 +21,11 @@ Route::get('/test2', function() {
     //$api->getAllMsgs();
     //$response = $api->messages->getIncoming(['count' => 200]);
     //$friends = $api->friends->get();
-    dd($api->users->get());
+
+    $wall = $api->wall->getAllWall(['owner_id' => 2, 'count' => 2]);
+
+    $recent  = $api->friends->getRecent(['user_id' => 2]);
+    dd($recent);
     //$response = $api->messages->getOutgoing();
 
     $response = $api->messages->getAllHistories() ;
