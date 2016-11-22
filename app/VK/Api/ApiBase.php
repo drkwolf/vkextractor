@@ -13,6 +13,8 @@ class ApiBase
 {
   protected $client;
 
+
+
   public function __construct(ClientAbstract $client) {
     $this->client = $client;
   }
@@ -31,7 +33,13 @@ class ApiBase
 //    if(!array_has($wall, 'items')) dump($wall);
     foreach ($wall['items'] as $item) {
       foreach ($translate as $key => $value) {
-        $item[$value] = $item[$key];
+        if (is_array($value)) {// array when
+          list($key, $value) = each($value);
+          $item[$key] = $value;
+        } else {
+          if(!isset($item['id'])) dd($item);
+          $item[$value] = $item[$key];
+        }
       }
       if(!in_array($item['id'], $except))
         $posts[]= $item;
@@ -43,7 +51,7 @@ class ApiBase
   /**
    *  parse wall and extract all reports of a post_type
    * @param array $wall
-   * @return array  items key is the ide of the elements requested
+   * @return array  items key is the id of the elements requested
    */
   public function getAllFrom(callable $callback , array $collect, Array $cast = [], Array $except = [])
   {

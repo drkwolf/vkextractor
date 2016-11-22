@@ -11,6 +11,7 @@ namespace App\VK\Api;
 
 use App\VK\Api\Params\WallGetCommentsParams;
 use App\VK\Api\Params\WallGetParams;
+use App\VK\Api\Params\WallGetReportsParams;
 
 class Wall extends ApiBase
 {
@@ -69,20 +70,11 @@ class Wall extends ApiBase
    */
   public function getCommentsFromWall(Array $wall)
   {
-    $posts = $this->renameKeys($wall, ['id' => 'post_id']);
-    $items = [];
-    $count = 0;
-    foreach ($posts as $post) {
-      if (array_get($post, 'comments.count', 0) > 0) {
-        $count++;
-        $items[$post['post_id']] = $this->getAllComments($post);
-      }
-    }
-
-   return ['count' => $count, 'items' =>  $items];
+    $cast = ['id' => 'post_id'];
+    return $this->getAllFrom([$this, 'getAllComments'], $wall , $cast);
   }
 
-  public function getReports(array $params)
+  public function getReposts(array $params)
   {
     $default = [
       'owner_id' => $this->client->getUserId(), //required
@@ -91,7 +83,7 @@ class Wall extends ApiBase
       'offset' => 0,
     ];
 
-    return $this->client->request('wall.getReports', $default, $params);
+    return $this->client->request('wall.getReposts', $default, $params);
   }
 
   /**
@@ -99,8 +91,8 @@ class Wall extends ApiBase
    * @param array $params
    * @return array|mixed
    */
-  public function getAllReports(array $params) {
-    return $this->client->getAll([$this, 'getComments'], WallGetReportsParams::MAX_COUNT, $params);
+  public function getAllReposts(array $params) {
+    return $this->client->getAll([$this, 'getReposts'], WallGetReportsParams::MAX_COUNT, $params);
   }
 
   /**
@@ -108,17 +100,10 @@ class Wall extends ApiBase
    * @param array $wall
    * @return array
    */
-  public function getAllReportsFromWall(array $wall)
+  public function getAllRepostsFromWall(array $wall)
   {
-    $posts = $this->renameKeys($wall, ['id' => 'post_id']);
-    $reports = ['count' => array_get($wall, 'count')];
-    $items = [];
-    foreach ($posts as $post) {
-      $items[] = $this->getAllComments($post);
-    }
-
-    $reports['items'] =  $items;
-    return $reports;
+    $cast = ['id' => 'post_id'];
+    return $this->getAllFrom([$this, 'getAllReposts'], $wall , $cast);
   }
 
 }

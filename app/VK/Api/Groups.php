@@ -63,6 +63,6 @@ class Groups extends ApiBase
    * @return array
    */
   public function getMembersFromGroups(array $groups, Array $except = []) {
-    return $this->getAllFrom([$this, 'getAllMembers'], $groups, $except);
+    return $this->getAllFrom([$this, 'getAllMembers'], $groups,['id'=>'group_id'], $except);
   }
 }

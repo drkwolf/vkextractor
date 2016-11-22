@@ -24,4 +24,22 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
 
       return $app;
     }
+
+      public function saveTo(Array $data, $id, $filename)
+  {
+    $root = storage_path('app/data/'.$id);
+    $path = $root . '/'. $filename . '.php';
+    if (!is_dir($root)) mkdir($pathname = $root, $mode=0777, $recursive = true);
+
+    file_put_contents($path,'<?php return '. var_export($data, true).";\n");
+  }
+
+  public function getArray($id, $filename)
+  {
+    $root = storage_path('app/data/'.$id);
+    $path = $root . '/'. $filename . '.php';
+    return include $path;
+//    return $data;
+  }
+
 }

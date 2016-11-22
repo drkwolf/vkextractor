@@ -20,11 +20,12 @@ use App\VK\Exceptions\UnknownErrorVkException;
 use App\VK\Exceptions\UserDeletedOrBannedException;
 use App\VK\Exceptions\VkException;
 
+use Carbon\Carbon;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 
 use GuzzleHttp\RequestOptions;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client as HttpClient;
 use App\VK\Contracts\ClientInterface;
 use Illuminate\Support\Facades\Log;
@@ -54,12 +55,19 @@ abstract class ClientAbstract implements ClientInterface
   protected $queryLog;
   protected $failureLog;
 
+  protected $stats = [
+    'success' => [],
+    'fails' => [],
+    'iter' => [],
+  ];
+
 
   public function __construct($version = null) {
     $this->version = $version? $version : static::API_VERSION;
     $this->http = new HttpClient([
       'base_uri'    => static::API_URI,
       'timeout'     => static::API_TIMEOUT,
+      'connect_timeout' => static::CONNECTION_TIMEOUT,
       'http_errors' => false,
       'headers'     => [
         'User-Agent' => 'unifr.ch/vkProject',
@@ -124,22 +132,53 @@ abstract class ClientAbstract implements ClientInterface
     try {
       $time_start = microtime(true);
       $data = $this->http->post($method, $params);
-      $time_end = microtime(true);
-      $this->queryLog->info($method, ['time' => ($time_end-$time_start), 'counter' => static::$counter, 'params' => $params]);
+      $length = $data->getheader('content-length');
+      $total_time = microtime(true) - $time_start;
+      $this->queryLog->info($method, [
+        'time' => $total_time, 'counter' => static::$counter,
+        'params' => $params,
+        'length' => $length
+      ]);
       $response = $this->getResponseData($data);
     } catch(TooManyRequestsVkException $e ) {
+      $time_start = microtime(true);
       usleep(static::WAIT_AFTER_REQ_ERROR); // .5 second
       $data = $this->http->post($method, $params); //send it again
+      $length = $data->getheader('content-length');
+      $total_time = microtime(true) - $time_start;
       $response = $this->getResponseData($data);
-      $this->queryLog->info($method, ['time' => ($time_end-$time_start), 'counter' => static::$counter, 'params' => $params]);
+      $this->queryLog->info($method, [
+        'time' => $total_time, 'counter' => static::$counter,
+        'params' => $params,
+        'length' => $length
+      ]);
       $this->failureLog->error('TooMany Queries/s ', ['method' => $method,'counter' => static::$counter,  'params' => $params]);
+
+      $this->stats['fails'][] =[
+        'user_id' => $this->getUserId(),
+        'date' => Carbon::now(),
+        'method' =>$method,
+        'time' => $total_time,
+        'counter' => static::$counter,
+      ];
     } catch(VkException $e) {
       $this->failureLog->error('Exception ', ['method' => $method, 'exception' => $e,'counter' => static::$counter,  'params' => $params]);
       throw $e;
+    } catch(GuzzleException $e) {
+      // TODO serialise obeset then resume after connection comes
+      throw $e;
     }
 
-    return $response;
+    $this->stats['success'] =[
+      'user_id' => $this->getUserId(),
+      'date' => Carbon::now(),
+      'method' =>$method,
+      'time' => $total_time,
+      'counter' => static::$counter,
+      'length' => $length
+    ];
 
+    return $response;
   }
 
   /**
@@ -181,15 +220,27 @@ abstract class ClientAbstract implements ClientInterface
     $count = array_get($msg, 'count', sizeof($items));
 
     $max_iter = $count/$max_count-1; // +1 done
+    $time_start = microtime(true);
     for($i=0; $i<$max_iter; $i++) { //some awfull bugs by the api (likes.get item_id=2655 owner_id=5)
       $params['offset'] += $max_count;
       $msg = call_user_func_array($callback, [$params]);
       $items = array_merge($items, $msg['items']);
 //      dump($count, $count - sizeof($items) , $params['offset'],'-----');
     }
+    $time_total = microtime(true)- $time_start;
+    $stats = ['context' => $callback, 'count' => $max_count,
+      'iter' => $max_iter, 'time' => $time_total
+    ];
+    Log::debug('getAll', $stats );
+    $this->stats['iter'][] = $stats;
 
     // count and items size dosen't match allows
     return ['count' => sizeof($items), 'items' => $items];
+  }
+
+  public function getStats()
+  {
+    return $this->stats;
   }
 
   /**

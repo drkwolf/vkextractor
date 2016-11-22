@@ -89,7 +89,7 @@ class Friends extends ApiBase
    */
   public function getMutual(Array $params = []) {
     $default = [
-      'source_id' => $this->client->getUserId(),
+      'source_uid' => $this->client->getUserId(),
       'target_uid' => '',
       'target_uids' => '',
       'order' => '', 'count' => '',
@@ -97,6 +97,21 @@ class Friends extends ApiBase
     ];
 
     return $this->client->request('friends.getMutual', $default, $params);
+  }
+
+  /**
+   * @param array $params
+   * @param array $friends friends should be request with fields to remove deactivated from the list of requested users
+   */
+  public function getAllMutual(Array $params=[], $friends=[])
+  {
+    $items = [];
+    foreach($friends['items'] as $friend) {
+      if(!isset($friend['deactivated'])) $items[] = $friend['id'];
+    }
+    $params['target_uids'] = implode(',', $items);
+    return  $this->api->friends->getMutual($params);
+
   }
 
 }
