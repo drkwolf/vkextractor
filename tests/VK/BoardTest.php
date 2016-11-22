@@ -31,7 +31,7 @@ class VKBoardTest extends VKBaseTest
     $this->assertEquals($groups['count'], sizeof($groups['items']));
   }
 
-  public function test_get_groups_memebers()
+  public function test_get_groups_members()
   {
     $groups = $this->getArray($this->user_id, 'groups');
     $result = $this->api->groups->getMembersFromGroups($groups);
