@@ -158,6 +158,7 @@ abstract class ClientAbstract implements ClientInterface
       $this->stats['fails'][] = [
         'user_id' => $this->getUserId(),
         'date' => Carbon::now(),
+        'exception' => 'TooManyRequests',
         'method' => $method,
         'time' => $total_time,
         'counter' => static::$counter,
@@ -166,6 +167,14 @@ abstract class ClientAbstract implements ClientInterface
       $response = [ 'count' => 0, 'access_denied' => true, 'items' => []];
     } catch(InternalErrorVkException $e) {
       $this->failureLog->error('internal Error', ['method' => $method, 'counter' => static::$fails, 'params' => $params]);
+      $this->stats['fails'][] = [
+        'user_id' => $this->getUserId(),
+        'date' => Carbon::now(),
+        'exception' => 'InternalError',
+        'method' => $method,
+        'time' => $total_time,
+        'counter' => static::$counter,
+      ];
       if (static::$fails > 3) {
         throw $e;
       } else {
@@ -174,9 +183,25 @@ abstract class ClientAbstract implements ClientInterface
         return $this->request($method, $default, $params);
       }
     } catch (TooMuchSimilarVkException $e) {
-      static::$counter =0; sleep(1);
-      $this->request('users.get', [], []); // fake request to reste
       $this->failureLog->error('Too much similar: resend', ['method' => $method, 'counter' => static::$fails, 'params' => $params]);
+      $this->stats['fails'][] = [
+        'user_id' => $this->getUserId(),
+        'date' => Carbon::now(),
+        'exception' => 'TooMuchSimilar',
+        'method' => $method,
+        'time' => $total_time,
+        'counter' => static::$counter,
+      ];
+      $this->request('users.get', [], []); // fake request to reste
+      if (static::$fails > 5) {
+        throw $e;
+      } else {
+        sleep(5*static::$fails); // increase sleep after each fails
+        static::$fails++;
+        return $this->request($method, $default, $params);
+      }
+
+
       return $this->request($method, $default, $params); // resend
     } catch(VkException $e) {
       $this->failureLog->error('Exception ', ['method' => $method, 'exception' => $e,'counter' => static::$counter,  'params' => $params]);
