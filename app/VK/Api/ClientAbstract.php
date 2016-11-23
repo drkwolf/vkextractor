@@ -43,6 +43,7 @@ abstract class ClientAbstract implements ClientInterface
    * @var int request counter
    */
   protected static $counter = 1;
+  protected static $fails = 0;
 
 
   protected $http;
@@ -152,15 +153,31 @@ abstract class ClientAbstract implements ClientInterface
         'params' => $params,
         'length' => $length
       ]);
-      $this->failureLog->error('TooMany Queries/s ', ['method' => $method,'counter' => static::$counter,  'params' => $params]);
+      $this->failureLog->error('TooMany Queries/s ', ['method' => $method, 'counter' => static::$counter, 'params' => $params]);
 
-      $this->stats['fails'][] =[
+      $this->stats['fails'][] = [
         'user_id' => $this->getUserId(),
         'date' => Carbon::now(),
-        'method' =>$method,
+        'method' => $method,
         'time' => $total_time,
         'counter' => static::$counter,
       ];
+    } catch(AccessDeniedVkException $e) {
+      $response = [ 'count' => 0, 'access_denied' => true, 'items' => []];
+    } catch(InternalErrorVkException $e) {
+      $this->failureLog->error('internal Error', ['method' => $method, 'counter' => static::$fails, 'params' => $params]);
+      if (static::$fails > 3) {
+        throw $e;
+      } else {
+        sleep(5*static::$fails); // increase sleep after each fails
+        static::$fails++;
+        return $this->request($method, $default, $params);
+      }
+    } catch (TooMuchSimilarVkException $e) {
+      static::$counter =0; sleep(1);
+      $this->request('users.get', [], []); // fake request to reste
+      $this->failureLog->error('Too much similar: resend', ['method' => $method, 'counter' => static::$fails, 'params' => $params]);
+      return $this->request($method, $default, $params); // resend
     } catch(VkException $e) {
       $this->failureLog->error('Exception ', ['method' => $method, 'exception' => $e,'counter' => static::$counter,  'params' => $params]);
       throw $e;
@@ -178,6 +195,7 @@ abstract class ClientAbstract implements ClientInterface
       'length' => $length
     ];
 
+    static::$fails = 0; // fails
     return $response;
   }
 
@@ -293,6 +311,7 @@ abstract class ClientAbstract implements ClientInterface
       14 => CaptchaRequiredVkException::class,
       15 => AccessDeniedVkException::class,
       18 => UserDeletedOrBannedException::class,
+      212 => AccessDeniedVkException::class,
       // TOOD add other Exeception 18W
     ];
 

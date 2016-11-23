@@ -16,10 +16,10 @@ class CreateStatTable extends Migration
       Schema::create('stats', function (Blueprint $table) {
         $table->increments('id');
         $table->unsignedInteger('user_id')->unique();
-        $table->json('success');
-        $table->json('fails');
-        $table->json('iter');
-        $table->json('results');
+        $table->json('success')->nullable();
+        $table->json('fails')->nullable();
+        $table->json('iter')->nullable();
+        $table->json('results')->nullable();
         $table->timestamps();
       });
     }

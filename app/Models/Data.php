@@ -14,11 +14,32 @@ class Data extends Model
   protected $hidden = ['id', 'user_id'];
 
    protected $casts = [
-    'friends' => 'array',
 //    'user_info' => 'array',
+    'friends' => 'array',
      'friends_recent' => 'array',
      'friends_mutual' => 'array',
-    'messages' => 'array',
+     'followers' => 'array',
+     'subscriptions' => 'array',
+     'wall' => 'array',
+
+     'posts' => 'array',
+     'posts_reposts' => 'array',
+     'posts_likes' => 'array',
+     'posts_comments' => 'array',
+     'posts_comments_likes' => 'array',
+
+     'photos' => 'array',
+     'photos_albums' => 'array',
+     'photos_likes' => 'array',
+     'photos_comments' => 'array',
+     'photos_comments_likes' => 'array',
+
+     'videos' => 'array',
+     'videos_likes' => 'array',
+     'videos_comments' => 'array',
+     'videos_comments_likes' => 'array',
+
+     'messages' => 'array',
   ];
   public function user()
   {

@@ -17,31 +17,31 @@ class CreateDataTable extends Migration
       $table->increments('id');
       $table->integer('user_id');
 
-      $table->json('user_info');
-      $table->json('friends');
-      $table->json('friends_recent');
-      $table->json('friends_mutual');
-      $table->json('followers');
-      $table->json('subscriptions');
-      $table->json('messages');
-      $table->json('wall');
+      $table->json('user_info')->nullable();
+      $table->json('friends')->nullable();
+      $table->json('friends_recent')->nullable();
+      $table->json('friends_mutual')->nullable();
+      $table->json('followers')->nullable();
+      $table->json('subscriptions')->nullable();
+      $table->json('messages')->nullable();
+      $table->json('wall')->nullable();
       //posts
-      $table->json('posts');
-      $table->json('posts_reposts');
-      $table->json('posts_likes');
-      $table->json('posts_comments');
-      $table->json('posts_comments_likes');
+      $table->json('posts')->nullable();
+      $table->json('posts_reposts')->nullable();
+      $table->json('posts_likes')->nullable();
+      $table->json('posts_comments')->nullable();
+      $table->json('posts_comments_likes')->nullable();
       // photos
-      $table->json('photos');
-      $table->json('photos_albums');
-      $table->json('photos_likes');
-      $table->json('photos_comments');
-      $table->json('photos_comments_likes');
+      $table->json('photos')->nullable();
+      $table->json('photos_albums')->nullable();
+      $table->json('photos_likes')->nullable();
+      $table->json('photos_comments')->nullable();
+      $table->json('photos_comments_likes')->nullable();
       // video
-      $table->json('videos');
-      $table->json('videos_likes');
-      $table->json('videos_comments');
-      $table->json('videos_comments_likes');
+      $table->json('videos')->nullable();
+      $table->json('videos_likes')->nullable();
+      $table->json('videos_comments')->nullable();
+      $table->json('videos_comments_likes')->nullable();
 
       $table->foreign('user_id')->references('id')->on('users');
       $table->timestamps();

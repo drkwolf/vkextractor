@@ -6,7 +6,7 @@
  * Time: 6:05 PM
  */
 
-namespace app\VK;
+namespace App\VK;
 
 /**
  * supported Vk application type

@@ -110,7 +110,7 @@ class Friends extends ApiBase
       if(!isset($friend['deactivated'])) $items[] = $friend['id'];
     }
     $params['target_uids'] = implode(',', $items);
-    return  $this->api->friends->getMutual($params);
+    return  $this->getMutual($params);
 
   }
 
