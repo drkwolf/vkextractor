@@ -9,6 +9,8 @@
 namespace App\VK\Api;
 
 
+use App\VK\Api\Params\LikesGetListParams;
+
 class Photos extends ApiBase
 {
  protected $client;
@@ -60,8 +62,9 @@ class Photos extends ApiBase
     return $this->client->request('photos.getAll', $default, $params);
   }
 
-  public function getAllPhotos(Array $params = []) {
-    return $this->client->getAll([$this, 'getAll'], 200, $params);
+  public function getAllPhotos(Array $params) {
+    $params['extended'] = 1;
+    return $this->client->getAll2('photos.getAll', 200, $params);
   }
 
   /*
@@ -84,7 +87,7 @@ class Photos extends ApiBase
       'album_ids' => null,
       'photo_ids' => null,
       'offset' => 0,
-      'count'  => 1000, // no max set
+//      'count'  => 1000, // no max set
       'need_system' => false, // 1 rev 0 chrono
       'need_recovers' => false, // 1 likes, comments, tags
       'photo_sizes' => true,
@@ -135,7 +138,42 @@ class Photos extends ApiBase
 
   public function getAllCommentsFromAlbums(Array $albums)
   {
-    $cast = ['id' => 'album_id'];
-    return $this->getAllFrom([$this, 'getAllComments'], $albums , $cast);
+    $params = [];
+    foreach($albums['items'] as $album) {
+      $params[] = [
+        'id' => $album['id'],
+        'album_id' => $album['id'],
+        'owner_id' => $album['owner_id'],
+        'need_likes' => true,
+      ];
+    }
+    return $this->client->getAll3('photos.getAllComments', 100, $params);
   }
+
+  public function getAllLikesFromPhoto(array $photos)
+  {
+    $params = [];
+    foreach($photos['items'] as $photo) {
+      if(array_get($photo, 'likes.count', -1) > 0)
+        $params[] = ['id' => $photo['id'], 'type' => 'photo', 'item_id' => $photo['id'], 'owner_id' => $photo['owner_id']];
+    }
+    return $this->client->getAll3('likes.getList', LikesGetListParams::MAX_COUNT, $params);
+  }
+
+  public function getLikesFromComments(Array $comments, $owner_id) {
+
+    $items = [];
+    foreach($comments['items'] as $comment) {
+      if($comment['count'] === 0 ) continue;
+      foreach($comment['items'] as $item) {
+        if(array_get($item, 'likes.count', 0) > 0) {
+          $items[] = ['item_id' => $item['id'],'id' => $item['id'],
+            'from_id' => $item['from_id'], 'type' => 'photo_comment', 'owner_id' => $owner_id];
+        }
+      }
+    }
+
+    return $this->client->getAll3('likes.getList', LikesGetListParams::MAX_COUNT, $items);
+  }
+
 }

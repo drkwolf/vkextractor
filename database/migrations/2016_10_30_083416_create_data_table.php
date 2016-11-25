@@ -21,6 +21,7 @@ class CreateDataTable extends Migration
       $table->json('friends')->nullable();
       $table->json('friends_recent')->nullable();
       $table->json('friends_mutual')->nullable();
+      $table->json('friends_lists')->nullable();
       $table->json('followers')->nullable();
       $table->json('subscriptions')->nullable();
       $table->json('messages')->nullable();

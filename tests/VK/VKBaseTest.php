@@ -19,10 +19,10 @@ class VKBaseTest extends TestCase
     // wall hided = 2, deleted 4
     $this->user_id = 364878143; // TODO generated random
     $this->user_id = 280603942; // TODO generated random
+//    $this->user_id = 5; // TODO generated random
     $this->user_id = 5; // TODO generated random
-    $this->user_id = 1; // TODO generated random
     //$this->api = new \App\VK\ApiWithNoToken();
-    $auth = new \App\VK\Auth\AuthCrawler('messages,friends,likes,photos,audio,video,pages,notes,groups,board,polls');
+    $auth = new \App\VK\Auth\AuthCrawler('messages,wall,friends,likes,photos,audio,video,pages,notes,groups,board,polls');
     $credential = ['email' => env('VK_EMAIL'), 'password' => env('VK_PASS')];
     $vkToken = $auth->getToken($credential);
 

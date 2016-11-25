@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Exception;
 use App\Models\Data;
 use App\Models\User;
 use App\VK\ApiStandalone;
@@ -36,10 +37,10 @@ class VkRequestJob implements ShouldQueue
     $api = new ApiStandalone($this->user);
     $data = $this->user->data?: new Data();
 
-    $data->messages = json_encode($api->messages->getAllHistories());
-    $data->friends = json_encode($api->friends->get());
-    $data->friends_recent = json_encode($api->friends->getAllRecent());
-    $data->user_info = json_encode($api->users->get());
+    $data->messages = $api->messages->getAllHistories();
+    $data->friends = $api->friends->get();
+    $data->friends_recent = $api->friends->getAllRecent();
+    $data->user_info = $api->users->get();
     $data->user_id = $this->user->id;
     $data->save();
     $this->user->last_load = Carbon::now();

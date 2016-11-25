@@ -29,6 +29,9 @@ class CreateUsersTable extends Migration
             $table->enum('app_type', ['standalone', 'user_token', 'open'])->nullable();
             $table->timestamp('last_load')->nullable()->comment('last time data wase loaded');
             $table->boolean('friends_loaded')->default(false);
+
+            $table->unique(['nt_id']);
+
         });
     }
 

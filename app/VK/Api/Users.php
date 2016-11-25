@@ -66,8 +66,8 @@ class Users extends ApiBase
   }
 
 
-  public function getAllFollowers(array $params)
+ public function getAllFollowers(array $params)
   {
-    return $this->client->getAll([$this, 'getFollowers'], UsersGetFollowersParams::MAX_COUNT, $params);
+    return $this->client->getAll2('users.getFollowers', UsersGetFollowersParams::MAX_COUNT, $params);
   }
 }

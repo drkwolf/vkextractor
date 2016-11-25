@@ -114,4 +114,14 @@ class Friends extends ApiBase
 
   }
 
+  public function getLists(array $params)
+  {
+     $default = [
+      'user_id' =>  null,
+       'return_system' => 0,
+    ];
+
+    return $this->client->request('friends.getLists', $default, $params);
+  }
+
 }

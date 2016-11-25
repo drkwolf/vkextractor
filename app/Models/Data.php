@@ -18,6 +18,7 @@ class Data extends Model
     'friends' => 'array',
      'friends_recent' => 'array',
      'friends_mutual' => 'array',
+     'friends_lists' => 'array',
      'followers' => 'array',
      'subscriptions' => 'array',
      'wall' => 'array',

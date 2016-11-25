@@ -4,7 +4,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class TestUserData extends TestCase
+class GroupModelTest extends TestCase
 {
   use DatabaseMigrations;
 
@@ -50,4 +50,6 @@ class TestUserData extends TestCase
       dump('groups: '.$di.' topics '.$di.' comments '.$de);
       \App\Models\Group::insert($insert);
     }
+
+
 }

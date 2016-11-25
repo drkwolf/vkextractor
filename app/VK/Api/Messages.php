@@ -12,7 +12,7 @@ namespace App\VK\API;
 use App\VK\Api\Params\MessagesGetDiablogsParams;
 use App\VK\Api\Params\MessagesGetHistoryParams;
 use App\VK\Api\Params\MessagesGetParams;
-use App\VK\Api\Params\Paramameters;
+use App\VK\Api\Params\Parameters;
 use App\VK\Api\ClientAbstract;
 
 class Messages extends ApiBase
@@ -30,7 +30,7 @@ class Messages extends ApiBase
         $default = [
             'user_id' => null,
             'offset' => 0,
-            'count' => Paramameters::MAX_COUNT,
+            'count' => Parameters::MAX_COUNT,
             'peer_id' => null,
             'start_message_id' => null,
             'rev' => 1,

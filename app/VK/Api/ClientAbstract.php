@@ -164,7 +164,7 @@ abstract class ClientAbstract implements ClientInterface
         'counter' => static::$counter,
       ];
     } catch(AccessDeniedVkException $e) {
-      $response = [ 'count' => 0, 'access_denied' => true, 'items' => []];
+      $response = [ 'count' => 0, 'method' => $method, 'access_denied' => true, 'items' => $params];
     } catch(InternalErrorVkException $e) {
       $this->failureLog->error('internal Error', ['method' => $method, 'counter' => static::$fails, 'params' => $params]);
       $this->stats['fails'][] = [
@@ -192,17 +192,16 @@ abstract class ClientAbstract implements ClientInterface
         'time' => $total_time,
         'counter' => static::$counter,
       ];
-      $this->request('users.get', [], []); // fake request to reste
       if (static::$fails > 5) {
         throw $e;
       } else {
         sleep(5*static::$fails); // increase sleep after each fails
+        for($i=0; $i<5*static::$fails; $i++)
+          $this->request('users.get', [], []); // fake request to reste
+
         static::$fails++;
         return $this->request($method, $default, $params);
       }
-
-
-      return $this->request($method, $default, $params); // resend
     } catch(VkException $e) {
       $this->failureLog->error('Exception ', ['method' => $method, 'exception' => $e,'counter' => static::$counter,  'params' => $params]);
       throw $e;
@@ -280,6 +279,95 @@ abstract class ClientAbstract implements ClientInterface
     // count and items size dosen't match allows
     return ['count' => sizeof($items), 'items' => $items];
   }
+
+  public function getAll2($method, $max_count, $params, $max_exec=25) {
+    $params['offset'] = isset($params['offset'])? $params['offset']: 0;
+    $params['count'] = $max_count;
+
+    $msg = $this->request($method, $params); //send first request
+    $items = array_get($msg, 'items', $msg);
+    $count =  array_get($msg, 'count', sizeof($items));
+
+    $time_start = microtime(true);
+//    dump('count: '.$count.', max_iter: '.$max_iter.', execute: '.$execute_count);
+    for($offset=$max_count+$params['offset']; $offset<=$count; $offset+=$max_count*$max_exec) { //some awfull bugs by the api (likes.get item_id=2655 owner_id=5)
+      $execute = '';
+      $remain = ($count-$offset);
+      ($max_count*$max_exec >= $remain)? $j_max = ceil($remain/$max_count):$j_max=$max_exec;
+      for($j=0; $j<$j_max; $j++) {
+        $params['offset'] += $max_count;
+        $execute .= 'API.'.$method.'('.json_encode($params, JSON_HEX_QUOT).'),';
+      }
+//      dump('j_max: '.$j_max.' offset: '.$offset.' offset2:'. $params['offset'].' count: '.$count);
+      $resp = $this->request('execute', ['code' => 'return ['.$execute.'];']);
+
+      foreach($resp as $res) {
+        $items = array_merge($items, $res['items']);
+      }
+
+    }
+    $time_total = microtime(true)- $time_start;
+    $stats = ['context' => $method, 'count' => $max_count,'time' => $time_total ];
+    Log::debug('getAll', $stats );
+    $this->stats['iter'][] = $stats;
+//    dump($time_total, sizeof($items));
+
+    // count and items size dosen't match allows
+    return ['count' => sizeof($items), 'items' => $items];
+
+  }
+
+  /**
+   * send execute command for all parameters (25 query/request), check the result for content
+   * that exceed count and request the remaining content. this way we limit the number of request
+   * for example comments for user 1 : 81 comment exceed max_count while 224 not
+   * @param $method
+   * @param $max_count
+   * @param $params
+   * @param int $max_exec
+   * @return array
+   */
+  public function getAll3($method, $max_count, $params, $max_exec=25) {
+    $count =  sizeof($params);
+    $items = [];
+
+    $time_start = microtime(true);
+//    dump('count: '.$count.', max_iter: '.$max_iter.', execute: '.$execute_count);
+
+    for($i=0; $i< $count; $i+=$max_exec) {
+      $execute = '';
+      $remain = ($count-$i);
+      $j_max = ($remain < $max_exec)? $remain:$max_exec;
+//      dump('offset: '.$i.' j_max: '.($i+$j_max).' remain: '.$remain.' count: '.$count);
+      for($j=0; $j<$j_max; $j++) {
+        $param = $params[$i+$j];
+        $param['count'] = $max_count;
+        $id = array_pull($param, 'id');
+        $execute .= '"'.$id.'":API.'.$method.'('.json_encode($param, JSON_HEX_QUOT).'),';
+      }
+      $items = $items + $this->request('execute', ['code' => 'return {'.$execute.'};']);
+
+    }
+
+    $id =0;
+    foreach ($items as $key => $item) {
+      if(array_get($item, 'count', 0) > $max_count) {
+        $param = $params[$id];
+        $param['offset'] = $max_count;
+        $result = $this->getAll2($method,$max_exec,$param);
+        $items[$key]['items'] = $item['items'] + $result['items'];
+//        dump($item['count'].' '.sizeof($items[$key]['items']).' '. sizeof($result['items']));
+      }
+      $id++;
+    }
+
+    if(array_has($items, 'items')) {
+      return $items;
+    } else {
+      return ['count' => sizeof($items), 'items' => $items];
+    }
+  }
+
 
   public function getStats()
   {

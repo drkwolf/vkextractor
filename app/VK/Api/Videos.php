@@ -9,6 +9,8 @@
 namespace App\VK\Api;
 
 
+use App\VK\Api\Params\LikesGetListParams;
+
 class Videos extends ApiBase
 {
  protected $client;
@@ -30,32 +32,16 @@ class Videos extends ApiBase
       'album_id' => null, // required
       'videos' => null, // required
       'offset' => 0,
-      'count'  => 1000, // MAX 1000
+      'count'  => 200, // MAX 1000
       'extended' => 1, // 1 likes, comments, tags
     ];
 
     return $this->client->request('video.get', $default, $params);
   }
 
-  /**
-   * Needs userToken
-   * @param array $params
-   * @return array
-   */
-  public function getAll(array $params)
-  {
-    $default = [
-      'owner_id'  => null, // required // default current user
-      'offset' => 0,
-      'count'  => 200, // MAx 200
-      'extended' => true, // 1 likes, comments, tags
-    ];
-
-    return $this->client->request('video.getAll', $default, $params);
-  }
-
-  public function getAllVideos(Array $params = []) {
-    return $this->client->getAll([$this, 'get'], 200, $params);
+  public function getAllVideos(Array $params) {
+    $params['extended'] = 1;
+    return $this->client->getAll2('video.get', 200, $params);
   }
 
   /*
@@ -113,7 +99,44 @@ class Videos extends ApiBase
 
   public function getAllCommentsFromVideos(Array $albums)
   {
-    $cast = ['id' => 'video_id'];
-    return $this->getAllFrom([$this, 'getAllComments'], $albums , $cast);
+    $params = [];
+    foreach($albums['items'] as $album) {
+      $params[] = [
+        'id' => $album['id'],
+        'video_id' => $album['id'],
+        'owner_id' => $album['owner_id'],
+        'need_likes' => true,
+      ];
+    }
+    return $this->client->getAll3('video.getComments', 100, $params);
   }
+
+    public function getLikesFromVideos(array $videos)
+  {
+    $params = [];
+    foreach($videos['items'] as $video) {
+      if(array_get($video, 'likes.count', -1) > 0)
+        $params[] = ['id' => $video['id'], 'type' => 'video', 'item_id' => $video['id'], 'owner_id' => $video['owner_id']];
+
+    }
+    return $this->client->getAll3('likes.getList', LikesGetListParams::MAX_COUNT, $params);
+  }
+
+  public function getLikesFromComments(Array $comments, $owner_id) {
+
+    $items = [];
+    foreach($comments['items'] as $comment) {
+      if($comment['count'] === 0 ) continue;
+      foreach($comment['items'] as $item) {
+        if(array_get($item, 'likes.count', 0) > 0) {
+          $items[] = ['item_id' => $item['id'],'id' => $item['id'],
+            'from_id' => $item['from_id'], 'type' => 'video_comment', 'owner_id' => $owner_id];
+        }
+      }
+    }
+
+    return $this->client->getAll3('likes.getList', LikesGetListParams::MAX_COUNT, $items);
+  }
+
+
 }

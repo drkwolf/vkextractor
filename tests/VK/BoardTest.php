@@ -72,4 +72,12 @@ class VKBoardTest extends VKBaseTest
     $this->saveTo($result, $this->user_id, 'topic_comments_likes');
     $this->assertEquals($result['count'], sizeof($result['items']));
   }
+
+  public function test_get_members()
+  {
+    $groups = $this->api->groups->getAllGroups(['user_id' => $this->user_id]);
+    $members = $this->api->groups->getAllMembers2(['group_id' => 29534144]);
+    dump($members['count']);
+    $this->assertEquals($members['count'], sizeof($members['items']));
+  }
 }

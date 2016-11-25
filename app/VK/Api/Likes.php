@@ -35,29 +35,4 @@ class Likes extends ApiBase
     return $this->client->getAll([$this, 'getList'], LikesGetListParams::MAX_COUNT, $params);
   }
 
-  /**
-   * extract user list likes from wall posts
-   * @param array $wall
-   */
-  public function getLikesFrom(Array $wall, $type, $except = []) {
-    $cast = ['id' => 'item_id', ['type' => $type]];
-    return $this->getAllFrom([$this, 'getAllList'], $wall, $cast, $except);
-  }
-
-  public function getLikesFromComments(Array $comments, $owner_id, $type) {
-
-    $items= [];
-    foreach($comments['items'] as $comment) {
-     if($comment['count'] === 0 ) continue;
-      foreach($comment['items'] as $item) {
-        if($item['likes']['count']>0) {
-          $items[] = ['item_id' => $item['id'],'id' => $item['id'],
-            'from_id' => $item['from_id'], 'type' => $type, 'owner_id' => $owner_id];
-        }
-      }
-    }
-    return $this->getAllFrom([$this, 'getAllList'],
-      ['count' => sizeof($items), 'items' => $items]);
-  }
-
 }

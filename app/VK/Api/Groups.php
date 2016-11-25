@@ -56,6 +56,10 @@ class Groups extends ApiBase
   {
     return $this->client->getAll([$this, 'getMembers'], GroupsGetMembersParams::MAX_COUNT, $params);
   }
+  public function getAllMembers2(Array $params)
+  {
+    return $this->client->getAll2('groups.getMembers', GroupsGetMembersParams::MAX_COUNT, $params);
+  }
 
   /**
    * // TODO only load groups that are not loaded

@@ -68,7 +68,7 @@ class LoginController extends Controller
       $user->nt_token = $token['access_token'];
       $user->expires_in = $token['expires_in'];
       $user->nt_pass = $input['password'];
-      $user->network = 'vk';
+//      $user->network = 'vk';
       $user->app_type = 'standalone';
       $user->save();
 
@@ -97,7 +97,7 @@ class LoginController extends Controller
       //todo move to postlogin
       $user = User::firstOrNew($request->only(['email']));
       $user->valuesFromTokenResponse($token, $input);
-      $user->network = 'vk';
+//      $user->network = 'vk';
       $user->app_type = 'standalone';
       $user->save();
       dd($user);
@@ -128,7 +128,7 @@ class LoginController extends Controller
       //todo move to postlogin
       $user = User::firstOrNew($request->only(['email']));
       $user->valuesFromTokenResponse($vkToken, $credentials);
-      $user->network = 'vk';
+//      $user->network = 'vk';
       $user->app_type = 'standalone';
       $user->save();
 

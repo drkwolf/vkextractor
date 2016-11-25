@@ -67,4 +67,28 @@ class ApiBase
 
     return ['count' => sizeof($items), 'items' => $items];
   }
+
+
+  public function getAllFrom2($method, array $collect, array $cast=[], Array $except = []) {
+    $max_exec = 25;
+    $posts = $this->renameKeys($collect, $cast, $except);
+    $items = [];
+    $execute = '';
+    for($i=0; $i< sizeof($posts); $i+=$max_exec) {
+      for($j=0;$j< $max_exec; $j++) {
+        $post = $posts[($i+1)*$j];
+        if( (array_get($post, 'count', 1) > 0) AND !array_has($post, 'deactivated')) {
+          $execute .= 'API.'.$method.'('.json_encode($post, JSON_HEX_QUOT).'),';
+        }
+
+        dd($execute);
+        $resp = $this->request('execute', ['code' => 'return ['.$execute.'];']);
+        foreach($resp as $res) {
+          $items = array_merge($items, $res['items']);
+        }
+
+      }
+    }
+  }
+
 }
