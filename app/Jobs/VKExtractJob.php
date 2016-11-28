@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -34,9 +35,9 @@ class VKExtractJob implements ShouldQueue
   public function handle()
   {
     for($i=$this->start ; $i< $this->end; $i++) {
-      if(!\App\Models\User::where('nt_id', $i)->exists()) {
+      if(!User::where('nt_id', $i)->exists()) {
         dump('int user_id: '.$i);
-        $job = new \App\Jobs\VkOpenJob($i);
+        $job = new VkOpenJob($i);
         $job->handle();
         $this->get_friends($i, $this->depth);
       }
@@ -48,12 +49,12 @@ class VKExtractJob implements ShouldQueue
   {
     if ($depth == 0) return;
     dump('depth '.$depth);
-    $user = \App\Models\User::where('nt_id', $id)->first();
+    $user = User::where('nt_id', $id)->first();
     $friends = $user->data->friends;
     foreach ($friends['items'] as $friend) {
       $fid = $friend['id'];
       dump('friends_user_id: '.$fid);
-      if(!\App\Models\User::where('nt_id', $fid)->exists()) {
+      if(!User::where('nt_id', $fid)->exists()) {
         $this->get_user($fid);
         $this->get_friends($fid, $depth-1);
       }
@@ -64,7 +65,7 @@ class VKExtractJob implements ShouldQueue
 
   public function get_user($id)
   {
-    if(!\App\Models\User::where('nt_id', $id)->exists()) {
+    if(!User::where('nt_id', $id)->exists()) {
       $job = new \App\Jobs\VkOpenJob($id);
       $job->handle();
     }
