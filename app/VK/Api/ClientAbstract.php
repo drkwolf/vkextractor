@@ -354,7 +354,7 @@ abstract class ClientAbstract implements ClientInterface
       if(array_get($item, 'count', 0) > $max_count) {
         $param = $params[$id];
         $param['offset'] = $max_count;
-        $result = $this->getAll2($method,$max_exec,$param);
+        $result = $this->getAll2($method,$max_count,$param);
         $items[$key]['items'] = $item['items'] + $result['items'];
 //        dump($item['count'].' '.sizeof($items[$key]['items']).' '. sizeof($result['items']));
       }

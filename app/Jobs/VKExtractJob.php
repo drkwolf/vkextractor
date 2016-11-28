@@ -22,7 +22,7 @@ class VKExtractJob implements ShouldQueue
      */
     public function __construct($start=1000, $end=101000, $depth=7)
     {
-        $this->start = $start;
+      $this->start = $start;
       $this->end = $end;
       $this->depth =$depth;
     }
@@ -35,14 +35,10 @@ class VKExtractJob implements ShouldQueue
   public function handle()
   {
     for($i=$this->start ; $i< $this->end; $i++) {
-      if(!User::where('nt_id', $i)->exists()) {
-        dump('progess:'.$i/$this->end.'% int user_id: '.$i);
-        $job = new VkOpenJob($i);
-        $job->handle();
-        $this->get_friends($i, $this->depth);
-      }
+      dump('progess:'.$i/$this->end.'% int user_id: '.$i);
+      $this->get_user($i);
+      $this->get_friends($i, $this->depth);
     }
-
   }
 
   public function get_friends($id, $depth)
@@ -54,13 +50,21 @@ class VKExtractJob implements ShouldQueue
     foreach ($friends['items'] as $friend) {
       $fid = $friend['id'];
       dump('size:'.sizeof($friends).' id: '.$fid);
-      if(!User::where('nt_id', $fid)->exists()) {
-        $this->get_user($fid);
-        $this->get_friends($fid, $depth-1);
-      }
+      $this->get_user($fid);
     }
     $user->friends_loaded = true;
+    $this->get_foaf($friends, $depth-1);
     $user->save();
+  }
+
+  public function get_foaf($friends, $depth) {
+    foreach ($friends['items'] as $friend) {
+      $fid = $friend['id'];
+      dump('size:'.sizeof($friends).' id: '.$fid);
+      if(!User::where('nt_id', $fid)->exists()) {
+        $this->get_friends($fid, $depth);
+      }
+    }
   }
 
   public function get_user($id)
@@ -68,6 +72,8 @@ class VKExtractJob implements ShouldQueue
     if(!User::where('nt_id', $id)->exists()) {
       $job = new \App\Jobs\VkOpenJob($id);
       $job->handle();
+    } else {
+      dump('user_id '.$id.' exists');
     }
   }
 }
