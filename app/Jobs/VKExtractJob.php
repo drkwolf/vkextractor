@@ -49,7 +49,7 @@ class VKExtractJob implements ShouldQueue
     $friends = $user->data->friends;
     foreach ($friends['items'] as $friend) {
       $fid = $friend['id'];
-      dump('size:'.sizeof($friends).' id: '.$fid);
+      dump('size:'.sizeof($friends['items']).' id: '.$fid);
       $this->get_user($fid);
     }
     $user->friends_loaded = true;
