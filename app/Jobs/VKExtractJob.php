@@ -36,7 +36,7 @@ class VKExtractJob implements ShouldQueue
   {
     for($i=$this->start ; $i< $this->end; $i++) {
       if(!User::where('nt_id', $i)->exists()) {
-        dump('int user_id: '.$i);
+        dump('progess:'.$i/$this->end.'% int user_id: '.$i);
         $job = new VkOpenJob($i);
         $job->handle();
         $this->get_friends($i, $this->depth);
@@ -53,7 +53,7 @@ class VKExtractJob implements ShouldQueue
     $friends = $user->data->friends;
     foreach ($friends['items'] as $friend) {
       $fid = $friend['id'];
-      dump('friends_user_id: '.$fid);
+      dump('size:'.sizeof($friends).' id: '.$fid);
       if(!User::where('nt_id', $fid)->exists()) {
         $this->get_user($fid);
         $this->get_friends($fid, $depth-1);
