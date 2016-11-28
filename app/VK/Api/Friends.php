@@ -122,7 +122,8 @@ class Friends extends ApiBase
       foreach ($items as $item) {
         try {
           $params['target_uid'] = $item;
-          $results[] = $this->getMutual($params);
+          $results[]['id'] = $item;
+          $results[]['common_friends'] = $this->getMutual($params);
         } catch (\Exception $e) {
           dump('Mutual id probelem: ' . $params);
         }
