@@ -126,8 +126,8 @@ class Friends extends ApiBase
         } catch (\Exception $e) {
           dump('Mutual id probelem: ' . $params);
         }
-        return $results;
       }
+      return $results;
     }
   }
 
