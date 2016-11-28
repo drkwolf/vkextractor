@@ -11,6 +11,8 @@ namespace App\VK\Api;
 
 use App\VK\Api\ClientAbstract;
 use App\VK\Api\Params\MessagesGetParams;
+use App\VK\Api\Params\UsersGetParams;
+use App\VK\Exceptions\UserDeletedOrBannedException;
 
 class Friends extends ApiBase
 {
@@ -37,8 +39,9 @@ class Friends extends ApiBase
 
   public function getAllFriends($params)
   {
-    if(array_get($params, 'fields', false)) {
-      return $this->client->getAll([$this, 'get'], 5000, $params);
+//    $params['fields'] = implode(',', [ 'can_post', 'can_see_all_posts', 'can_see_audio', 'can_write_private_message', ]);
+    if(array_has($params, 'fields')) {
+      return $this->client->getAll2('friends.get', 5000, $params);
     } else {
       return $this->get($params);
     }
@@ -106,13 +109,28 @@ class Friends extends ApiBase
   public function getAllMutual(Array $params=[], $friends=[])
   {
     $items = [];
-    foreach($friends['items'] as $friend) {
-      if(!isset($friend['deactivated'])) $items[] = $friend['id'];
-    }
-    $params['target_uids'] = implode(',', $items);
-    return  $this->getMutual($params);
+    foreach ($friends['items'] as $friend) {
+      if (!array_has($friend, 'deactivated')) $items[] = $friend['id'];
 
+    }
+
+    try { // FIXME
+      $params['target_uids'] = implode(',', $items);
+      return $this->getMutual($params);
+    } catch (UserDeletedOrBannedException $e) {
+      $results = [];
+      foreach ($items as $item) {
+        try {
+          $params['target_uid'] = $item;
+          $results[] = $this->getMutual($params);
+        } catch (\Exception $e) {
+          dump('Mutual id probelem: ' . $params);
+        }
+        return $results;
+      }
+    }
   }
+
 
   public function getLists(array $params)
   {
