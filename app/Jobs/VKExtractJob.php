@@ -47,9 +47,9 @@ class VKExtractJob implements ShouldQueue
     dump('depth '.$depth);
     $user = User::where('nt_id', $id)->first();
     $friends = $user->data->friends;
-    foreach ($friends['items'] as $friend) {
+    foreach ($friends['items'] as $key => $friend) {
       $fid = $friend['id'];
-      dump('size:'.sizeof($friends['items']).' id: '.$fid);
+      dump('size:'.sizeof($friends['items']).'/'.$key.' id: '.$fid);
       $this->get_user($fid);
     }
     $user->friends_loaded = true;
