@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -48,8 +49,9 @@ class VKExtractJob implements ShouldQueue
     $user = User::where('nt_id', $id)->first();
     $friends = $user->data->friends;
     foreach ($friends['items'] as $key => $friend) {
+      $dt = Carbon::now();
       $fid = $friend['id'];
-      dump('size:'.sizeof($friends['items']).'/'.$key.' id: '.$fid);
+      dump('size:'.sizeof($friends['items']).'/'.$key.' id: '.$fid.' t: '.$dt->toTimeString());
       $this->get_user($fid);
     }
     $user->friends_loaded = true;
