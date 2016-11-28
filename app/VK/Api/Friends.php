@@ -114,6 +114,8 @@ class Friends extends ApiBase
 
     }
 
+    if(sizeof($items) == 0) return [];
+
     try { // FIXME
       $params['target_uids'] = implode(',', $items);
       return $this->getMutual($params);
@@ -121,6 +123,7 @@ class Friends extends ApiBase
       $results = [];
       foreach ($items as $item) {
         try {
+          dump('item'.$item);
           $params['target_uid'] = $item;
           $results[] = ['id' => $item, 'common_friends' => $this->getMutual($params)];
         } catch (\Exception $e) {
