@@ -19,9 +19,11 @@ class VKExtractJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($start, $end, $depth)
+    public function __construct($start=1000, $end=101000, $depth=7)
     {
-
+        $this->start = $start;
+      $this->end = $end;
+      $this->depth =$depth;
     }
 
     /**

@@ -6,7 +6,7 @@ const state = {
     user_info: {
       first_name: '',
       last_name: '',
-      photo_50: '',
+      photo_50: 'http://vk.com/images/camera_c.gif',
     },
     messages: {
       count: 0
