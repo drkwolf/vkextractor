@@ -101,12 +101,14 @@ class Videos extends ApiBase
   {
     $params = [];
     foreach($albums['items'] as $album) {
-      $params[] = [
-        'id' => $album['id'],
-        'video_id' => $album['id'],
-        'owner_id' => $album['owner_id'],
-        'need_likes' => true,
-      ];
+      if(array_get($album, 'can_comment', 0)) {
+        $params[] = [
+          'id' => $album['id'],
+          'video_id' => $album['id'],
+          'owner_id' => $album['owner_id'],
+          'need_likes' => true,
+        ];
+      }
     }
     return $this->client->getAll3('video.getComments', 100, $params);
   }
