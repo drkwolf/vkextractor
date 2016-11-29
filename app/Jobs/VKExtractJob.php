@@ -16,6 +16,7 @@ class VKExtractJob implements ShouldQueue
   protected $depth = 7;
     use InteractsWithQueue, Queueable, SerializesModels;
 
+  protected $iter = 1;
     /**
      * Create a new job instance.
      *
@@ -39,6 +40,7 @@ class VKExtractJob implements ShouldQueue
       dump('progess:'.$i/$this->end.'% int user_id: '.$i);
       $this->get_user($i);
       $this->get_friends($i, $this->depth);
+      $this->iter++;
     }
   }
 
@@ -51,7 +53,7 @@ class VKExtractJob implements ShouldQueue
     foreach ($friends['items'] as $key => $friend) {
       $dt = Carbon::now();
       $fid = $friend['id'];
-      dump('depth: '.$depth.' size:'.$key.'/'.sizeof($friends['items']).' id: '.$fid.' t: '.$dt->toTimeString());
+      dump('iter: '.$this->iter.' depth: '.$depth.' size:'.$key.'/'.sizeof($friends['items']).' id: '.$fid.' t: '.$dt->toTimeString());
       $this->get_user($fid);
     }
     $user->friends_loaded = true;
