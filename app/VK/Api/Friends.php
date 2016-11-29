@@ -127,7 +127,8 @@ class Friends extends ApiBase
           $params['target_uid'] = $item;
           $results[] = ['id' => $item, 'common_friends' => $this->getMutual($params)];
         } catch (\Exception $e) {
-          dump('Mutual id probelem: ' . $params);
+//          dump('Mutual id probelem: ' . $params);
+          Log::info('user banned id : '.$item);
         }
       }
       return $results;

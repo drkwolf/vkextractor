@@ -21,6 +21,7 @@ class VKBaseTest extends TestCase
     $this->user_id = 280603942; // TODO generated random
 //    $this->user_id = 5; // TODO generated random
     $this->user_id = 12; // TODO generated random
+    $this->user_id = 11024968; // TODO generated random
     //$this->api = new \App\VK\ApiWithNoToken();
     $auth = new \App\VK\Auth\AuthCrawler('messages,wall,friends,likes,photos,audio,video,pages,notes,groups,board,polls');
     $credential = ['email' => env('VK_EMAIL'), 'password' => env('VK_PASS')];

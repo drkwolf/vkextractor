@@ -21,6 +21,7 @@ use App\VK\Exceptions\UserDeletedOrBannedException;
 use App\VK\Exceptions\VkException;
 
 use Carbon\Carbon;
+use League\Flysystem\Exception;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 
@@ -284,7 +285,13 @@ abstract class ClientAbstract implements ClientInterface
     $params['offset'] = isset($params['offset'])? $params['offset']: 0;
     $params['count'] = $max_count;
 
-    $msg = $this->request($method, $params); //send first request
+
+    try {
+      $msg = $this->request($method, $params); //send first request
+    } catch (UserDeletedOrBannedException $e) {
+      return [ 'deactivated' => true, 'count' => 0, 'items' => []];
+    }
+
     $items = array_get($msg, 'items', $msg);
     $count =  array_get($msg, 'count', sizeof($items));
 
@@ -345,7 +352,23 @@ abstract class ClientAbstract implements ClientInterface
         $id = array_pull($param, 'id');
         $execute .= '"'.$id.'":API.'.$method.'('.json_encode($param, JSON_HEX_QUOT).'),';
       }
-      $items = $items + $this->request('execute', ['code' => 'return {'.$execute.'};']);
+
+      try {
+        $items = $items + $this->request('execute', ['code' => 'return {'.$execute.'};']);
+      } catch (UserDeletedOrBannedException $e) {
+        $items2 = [];
+        for($j=0; $j<$j_max; $j++) {
+          $param = $params[$i+$j];
+          $param['count'] = $max_count;
+          $id = array_pull($param, 'id');
+          try {
+            $items2[$id] = $this->request($method, $param);
+          } catch (UserDeletedOrBannedException $e) {
+            Log::info('user banned id : '.$id);
+          }
+        }
+        $items = $items + $items2;
+      }
 
     }
 

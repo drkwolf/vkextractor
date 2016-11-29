@@ -158,7 +158,7 @@ class Wall extends ApiBase
 
     $items = [];
     foreach($comments['items'] as $comment) {
-      if($comment['count'] === 0 ) continue;
+      if(array_get($comment, 'count') === 0 ) continue;
       foreach($comment['items'] as $item) {
         if(array_get($item, 'likes.count', 0) > 0) {
           $items[] = ['item_id' => $item['id'],'id' => $item['id'],
