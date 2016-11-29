@@ -64,8 +64,9 @@ class VKExtractJob implements ShouldQueue
       $fid = $friend['id'];
       dump('size:'.sizeof($friends).' id: '.$fid);
       if(!User::where('nt_id', $fid)->exists()) {
-        $this->get_friends($fid, $depth);
+        $this->get_user($fid);
       }
+      $this->get_friends($fid, $depth);
     }
   }
 
