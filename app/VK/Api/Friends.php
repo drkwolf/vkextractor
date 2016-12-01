@@ -123,10 +123,10 @@ class Friends extends ApiBase
       $results = [];
       foreach ($items as $item) {
         try {
-          dump('item'.$item);
           $params['target_uid'] = $item;
           $results[] = ['id' => $item, 'common_friends' => $this->getMutual($params)];
         } catch (\Exception $e) {
+          dump('user banned '.$item);
 //          dump('Mutual id probelem: ' . $params);
           Log::info('user banned id : '.$item);
         }
