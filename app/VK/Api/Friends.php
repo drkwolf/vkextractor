@@ -157,7 +157,6 @@ class Friends extends ApiBase
   public function getMutualFromInterval($items, $params = [], $results = []) {
     $len = sizeof($items);
     $start = floor($len/2);
-    dump('len :'.$len);
     try {
       $params['target_uids'] = implode(',', $items);
       $res = $this->getMutual($params);
@@ -167,27 +166,16 @@ class Friends extends ApiBase
       }
 
       $results = array_merge($results, $res);
-      dump('        len '. sizeof($results));
+//      Log::info('        len '. sizeof($results));
     } catch (UserDeletedOrBannedException $e) {
       if($start < 1) {
         dump($items[$start].' banned');
       }
-//      $iter++;
-//      dump('arr1 0->'.$start);
-//      dump('arr2 '.$start.'->'.$len);
-
-//      dump('size1:'.sizeof($results));
       $remain = array_slice($items, 0, $start);
-//      dump('iter'.$iter.'  '.'arr1 0->'.$start.' size:'.sizeof($remain));
       $results = $this->getMutualFromInterval($remain, $params, $results);
-//      dump('len :'.sizeof($results). ' iter '. $iter);
 
-
-//      dump('===============================================');
       $remain = array_slice($items, $start);
       $results = $this->getMutualFromInterval($remain, $params, $results);
-//      dump('len :'.sizeof($results). ' iter '. $iter);
-//      dump('size2:'.sizeof($results));
     }
 
     return $results;
