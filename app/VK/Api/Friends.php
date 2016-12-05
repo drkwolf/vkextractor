@@ -13,6 +13,7 @@ use App\VK\Api\ClientAbstract;
 use App\VK\Api\Params\MessagesGetParams;
 use App\VK\Api\Params\UsersGetParams;
 use App\VK\Exceptions\UserDeletedOrBannedException;
+use Illuminate\Support\Facades\Log;
 
 class Friends extends ApiBase
 {
@@ -95,7 +96,7 @@ class Friends extends ApiBase
       'source_uid' => $this->client->getUserId(),
       'target_uid' => '',
       'target_uids' => '',
-      'order' => '', 'count' => '',
+      'order' => 'hints', 'count' => '',
       'offset' => ''
     ];
 
@@ -109,6 +110,7 @@ class Friends extends ApiBase
   public function getAllMutual(Array $params=[], $friends=[])
   {
     $items = [];
+//    $friends = array_reverse($friends);
     foreach ($friends['items'] as $friend) {
       if (!array_has($friend, 'deactivated')) $items[] = $friend['id'];
 
@@ -116,25 +118,81 @@ class Friends extends ApiBase
 
     if(sizeof($items) == 0) return [];
 
-    try { // FIXME
-      $params['target_uids'] = implode(',', $items);
-      return $this->getMutual($params);
-    } catch (UserDeletedOrBannedException $e) {
-      $results = [];
-      foreach ($items as $item) {
-        try {
-          $params['target_uid'] = $item;
-          $results[] = ['id' => $item, 'common_friends' => $this->getMutual($params)];
-        } catch (\Exception $e) {
-          dump('user banned '.$item);
-//          dump('Mutual id probelem: ' . $params);
-          Log::info('user banned id : '.$item);
-        }
-      }
-      return $results;
-    }
+    $results = $this->getMutualFromInterval($items, $params);
+    return $results;
+
+//    $results = [];
+//    $has_banned = false;
+//    for ($i=0; $i<sizeof($items); $i++) {
+//      try {
+//        if ($has_banned) {
+//          $params['target_uid'] = $items[$i];
+//          $results[] = ['id' => $items[$i], 'common_friends' => $this->getMutual($params)];
+//           dump('get user id '.$items[$i]);
+//        } else {
+//          dump('get remain '.key.' '.sizeof($items));
+//          $remain = array_slice($items, $i);
+//          $params['target_uids'] = implode(',', $remain);
+//          $results[] += $this->getMutual($params);
+//          return $results;
+//          }
+//      } catch (\Exception $e) {
+//        $has_banned = !$has_banned;
+//        dump('user banned '.$items[$i].' key '.$i);
+////          dump('Mutual id probelem: ' . $params);
+//        Log::info('user banned id : '.$items[$i]);
+//        if($has_banned) $i--;
+//      }
+//    }
+//      return $results;
   }
 
+  /**
+   * Vk has some awfull bug returning userbanned or delete
+   * @param $items
+   * @param array $params
+   * @param array $results
+   * @return array
+   */
+  public function getMutualFromInterval($items, $params = [], $results = []) {
+    $len = sizeof($items);
+    $start = floor($len/2);
+    dump('len :'.$len);
+    try {
+      $params['target_uids'] = implode(',', $items);
+      $res = $this->getMutual($params);
+      if( $res == null) {
+        dump("        results" .sizeof($res));
+        throw new UserDeletedOrBannedException();
+      }
+
+      $results = array_merge($results, $res);
+      dump('        len '. sizeof($results));
+    } catch (UserDeletedOrBannedException $e) {
+      if($start < 1) {
+        dump($items[$start].' banned');
+      }
+//      $iter++;
+//      dump('arr1 0->'.$start);
+//      dump('arr2 '.$start.'->'.$len);
+
+//      dump('size1:'.sizeof($results));
+      $remain = array_slice($items, 0, $start);
+//      dump('iter'.$iter.'  '.'arr1 0->'.$start.' size:'.sizeof($remain));
+      $results = $this->getMutualFromInterval($remain, $params, $results);
+//      dump('len :'.sizeof($results). ' iter '. $iter);
+
+
+//      dump('===============================================');
+      $remain = array_slice($items, $start);
+      $results = $this->getMutualFromInterval($remain, $params, $results);
+//      dump('len :'.sizeof($results). ' iter '. $iter);
+//      dump('size2:'.sizeof($results));
+    }
+
+    return $results;
+
+  }
 
   public function getLists(array $params)
   {

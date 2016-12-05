@@ -19,4 +19,8 @@ class VKUsersTest extends \VKBaseTest
     $this->assertEquals($result['count'], sizeof($result['items']));
   }
 
+  public function test_get_subscriptions() {
+   $results = $this->api->users->getAllSubscriptions(['user_id', 2851806]) ;
+  }
+
 }
