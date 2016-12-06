@@ -72,6 +72,7 @@ class VKExtractJob implements ShouldQueue
   public function get_foaf($friends, $depth) {
     foreach ($friends['items'] as $friend) {
       $fid = $friend['id'];
+      $this->setProgress($depth, 0, 1);
       if(!User::where('nt_id', $fid)->exists()) {
         $this->get_user($fid);
       }
@@ -89,9 +90,10 @@ class VKExtractJob implements ShouldQueue
     }
   }
 
-  protected  function setProgress($depth, $totFriends)
+  protected  function setProgress($depth, $totFriends=0, $size =0)
   {
     $this->progress[$depth]['tot'] += $totFriends;
+    $this->progress[$depth]['size'] += $size;
   }
 
   protected function dispProgress($depth) {
@@ -105,5 +107,10 @@ class VKExtractJob implements ShouldQueue
     echo '| '.str_pad($progress['current'].'/'.$progress['tot'], 10);
     }
     echo "|\n";
+    foreach($this->progress as $progress) {
+      echo '| '.str_pad($progress['size'], 10);
+    }
+    echo "|\n";
+
   }
 }
