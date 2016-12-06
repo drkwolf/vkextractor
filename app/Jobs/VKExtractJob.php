@@ -31,7 +31,8 @@ class VKExtractJob implements ShouldQueue
       $this->start = $start;
       $this->end = $end;
       $this->depth =$depth;
-      $this->command = new Command('vkCommand');
+      $this->command = new Command();
+      $this->command->setName('vkCommand');
 
       foreach(range(1,$depth+1) as $i) $this->progress[$i] = ['current'=> 0, 'tot' => 0];
     }
