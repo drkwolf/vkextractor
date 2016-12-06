@@ -8,7 +8,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Console\Command;
 
 
 class VKExtractJob implements ShouldQueue
@@ -31,8 +30,6 @@ class VKExtractJob implements ShouldQueue
       $this->start = $start;
       $this->end = $end;
       $this->depth =$depth;
-//      $this->command = new Command();
-//      $this->command->setName('vkCommand');
 
       foreach(range(1,$depth+1) as $i) $this->progress[$i] = ['current'=> 0, 'tot' => 0];
     }
@@ -95,10 +92,11 @@ class VKExtractJob implements ShouldQueue
   protected function dispProgress($depth, $current, $totFriends, $time) {
     $this->progress[$depth] = ['current' => $current, 'tot' => $totFriends];
     $head = range(1, $this->depth+1);
-    $out = [];
+    foreach($head as $i) echo str_pad($i, 10);
+    echo "\n";
     foreach($this->progress as $progress) {
-     $out[] = $progress['current'].'/'.$progress['tot'];
+    str_pad($progress['current'].'/'.$progress['tot'], 10);
     }
-    Command::table($head, $out);
+    echo "\n";
   }
 }
