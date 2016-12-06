@@ -161,7 +161,7 @@ class Friends extends ApiBase
       $params['target_uids'] = implode(',', $items);
       $res = $this->getMutual($params);
       if( $res == null) {
-        dump("        results" .sizeof($res));
+//        dump("        results" .sizeof($res).' '.$len);
         throw new UserDeletedOrBannedException();
       }
 
