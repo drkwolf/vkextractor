@@ -31,7 +31,7 @@ class VKExtractJob implements ShouldQueue
       $this->end = $end;
       $this->depth =$depth;
 
-      foreach(range(1,$depth) as $i) $this->progress[$i] = ['current'=> 0, 'tot' => 0, 'size' => 0];
+      $this->resetProgress();
     }
 
     /**
@@ -46,6 +46,7 @@ class VKExtractJob implements ShouldQueue
       $this->get_user($i);
       $this->get_friends($i, $this->depth);
       $this->iter++;
+      $this->resetProgress();
     }
   }
 
@@ -112,5 +113,9 @@ class VKExtractJob implements ShouldQueue
     }
     echo "|\n";
 
+  }
+
+  protected  function resetProgress() {
+    foreach(range(1,$this->depth) as $i) $this->progress[$i] = ['current'=> 0, 'tot' => 0, 'size' => 0];
   }
 }
