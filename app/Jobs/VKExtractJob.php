@@ -90,7 +90,9 @@ class VKExtractJob implements ShouldQueue
   }
 
   protected function dispProgress($depth, $current, $totFriends, $time) {
-    $this->progress[$depth] = ['current' => $current+1, 'tot' => $totFriends];
+    $this->progress[$depth]['current'] += $current+1;
+    $this->progress[$depth]['tot'] += $totFriends;
+
     $head = range(1, $this->depth);
     $head[$depth-1] .='*';
     foreach($head as $i) echo '| '.str_pad($i, 10);
