@@ -45,6 +45,10 @@ class DataMining extends Model
       }
       $inserts[] = $insert;
     }
+
+    $root = storage_path('app/data/datamining.json');
+    $result = json_encode($inserts);
+    File::put($root, $result);
     return $inserts;
 
   }
