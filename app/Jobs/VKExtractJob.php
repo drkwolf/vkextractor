@@ -94,7 +94,8 @@ class VKExtractJob implements ShouldQueue
   {
     $this->progress[$depth]['tot'] += $totFriends;
   }
-  protected function dispProgress($depth, $time) {
+
+  protected function dispProgress($depth) {
     $this->progress[$depth]['current'] += 1;
 
     $head = range(1, $this->depth);
