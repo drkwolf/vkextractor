@@ -91,7 +91,7 @@ class VKExtractJob implements ShouldQueue
     }
   }
 
-  protected  function setProgress($depth, $totFriends, $totFoaf)
+  protected  function setProgress($depth, $totFriends=0, $totFoaf=0)
   {
     $this->progress[$depth]['tot'] += $totFriends;
     $this->progress[$depth]['size'] += $totFoaf;
