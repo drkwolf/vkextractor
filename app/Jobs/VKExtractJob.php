@@ -31,7 +31,7 @@ class VKExtractJob implements ShouldQueue
       $this->end = $end;
       $this->depth =$depth;
 
-      foreach(range(1,$depth) as $i) $this->progress[$i] = ['current'=> 0, 'tot' => 0];
+      foreach(range(1,$depth) as $i) $this->progress[$i] = ['current'=> 0, 'tot' => 0, 'size' => 0];
     }
 
     /**
@@ -73,6 +73,7 @@ class VKExtractJob implements ShouldQueue
     foreach ($friends['items'] as $friend) {
       $fid = $friend['id'];
       dump('size:'.sizeof($friends).' id: '.$fid);
+      $this->setProgress($depth, 0, sizeof(friends));
       if(!User::where('nt_id', $fid)->exists()) {
         $this->get_user($fid);
       }
@@ -90,9 +91,10 @@ class VKExtractJob implements ShouldQueue
     }
   }
 
-  protected  function setProgress($depth, $totFriends)
+  protected  function setProgress($depth, $totFriends, $totFoaf)
   {
     $this->progress[$depth]['tot'] += $totFriends;
+    $this->progress[$depth]['size'] += $totFoaf;
   }
 
   protected function dispProgress($depth) {
@@ -106,5 +108,10 @@ class VKExtractJob implements ShouldQueue
     echo '| '.str_pad($progress['current'].'/'.$progress['tot'], 10);
     }
     echo "|\n";
+    foreach($this->progress as $progress) {
+    echo '| '.str_pad($progress['size'], 10);
+    }
+    echo "|\n";
+
   }
 }
