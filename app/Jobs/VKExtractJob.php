@@ -8,15 +8,19 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Console\Command;
+
 
 class VKExtractJob implements ShouldQueue
 {
+  use InteractsWithQueue, Queueable, SerializesModels;
+
   protected $start = 1000;
   protected $end = 101100;
   protected $depth = 7;
-    use InteractsWithQueue, Queueable, SerializesModels;
-
+  protected $progress = [];
   protected $iter = 1;
+  protected $command;
     /**
      * Create a new job instance.
      *
@@ -27,6 +31,9 @@ class VKExtractJob implements ShouldQueue
       $this->start = $start;
       $this->end = $end;
       $this->depth =$depth;
+      $this->command = new Command();
+
+      foreach(range(1,$depth+1) as $i) $this->progress[$i] = ['current'=> 0, 'tot' => 0];
     }
 
     /**
@@ -50,10 +57,12 @@ class VKExtractJob implements ShouldQueue
     dump('depth '.$depth);
     $user = User::where('nt_id', $id)->first();
     $friends = $user->data->friends;
+    $totFriends = sizeof($friends['items']);
     foreach ($friends['items'] as $key => $friend) {
       $dt = Carbon::now();
       $fid = $friend['id'];
       dump('iter: '.$this->iter.' depth: '.$depth.' size:'.$key.'/'.sizeof($friends['items']).' id: '.$fid.' t: '.$dt->toTimeString());
+      $this->dispProgress($depth, $key, $totFriends,$dt->toTimeString() );
       $this->get_user($fid);
     }
     $user->friends_loaded = true;
@@ -80,5 +89,15 @@ class VKExtractJob implements ShouldQueue
     } else {
       dump('user_id '.$id.' exists');
     }
+  }
+
+  protected function dispProgress($depth, $current, $totFriends, $time) {
+    $this->progress[$depth] = ['current' => $current, 'tot' => $totFriends];
+    $head = range(1, $this->depth+1);
+    $out = [];
+    foreach($this->progress as $progress) {
+     $out[] = $progress['current'].'/'.$progress['tot'];
+    }
+    $this->command->table($head, $out);
   }
 }
