@@ -85,21 +85,21 @@ class VkOpenJob implements ShouldQueue
         // need to be fixed
         $Data->posts_reposts = $api->wall->getAllRepostsFromWall($Data->wall);
         $Data->posts_likes = $api->wall->getAllLikesFromWall($Data->wall);
-        $Data->posts_comments = $api->wall->getAllCommentsFromWall($Data->wall);
-        $Data->posts_comments_likes = $api->wall->getLikesFromComments($Data->posts_comments, $owner_id = $this->user_id);
+//        $Data->posts_comments = $api->wall->getAllCommentsFromWall($Data->wall);
+//        $Data->posts_comments_likes = $api->wall->getLikesFromComments($Data->posts_comments, $owner_id = $this->user_id);
 
         // photo
         $Data->photos = $api->photos->getAllPhotos($params);
         $Data->photos_albums = $api->photos->getAlbums($params);
         $Data->photos_likes = $api->photos->getAllLikesFromPhoto($Data->photos_albums);
-        $Data->photos_comments = $api->photos->getAllCommentsFromAlbums($Data->photos_albums);
-        $Data->photos_comments_likes = $api->photos->getLikesFromComments($Data->photos_comments, $owner_id = $this->user_id);
+//        $Data->photos_comments = $api->photos->getAllCommentsFromAlbums($Data->photos_albums);
+//        $Data->photos_comments_likes = $api->photos->getLikesFromComments($Data->photos_comments, $owner_id = $this->user_id);
 
         // Videos
         $Data->videos = $api->videos->getAllVideos($params);
         $Data->videos_likes = $api->videos->getLikesFromVideos($Data->videos);
-        $Data->videos_comments = $api->videos->getAllCommentsFromVideos($Data->videos);
-        $Data->videos_comments_likes = $api->videos->getLikesFromComments($Data->videos_comments, $owner_id = $this->user_id);
+//        $Data->videos_comments = $api->videos->getAllCommentsFromVideos($Data->videos);
+//        $Data->videos_comments_likes = $api->videos->getLikesFromComments($Data->videos_comments, $owner_id = $this->user_id);
 
         // get wall comment likes
 //        $existing_g = $Group->all('id')->pluck('id')->toArray();
