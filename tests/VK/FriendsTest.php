@@ -28,7 +28,7 @@ class VKFriendsTest extends \VKBaseTest
 
   public function test_getMutual()
   {
-    $this->user_id = 2675;
+    $this->user_id = 23650051;
     $friends = $this->api->friends->getAllFriends(['user_id' => $this->user_id , 'fields' => ['deactivated']]);
 //    $friends = $this->api->friends->get(['user_id' => $this->user_id, 'fields' => ['deactivated']]);
     $params = ['source_uid' => $this->user_id];

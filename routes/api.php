@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+//use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +17,6 @@ Route::get('/user/data', 'UserController@getData')->middleware('jwt.auth:api');
 
 Route::post('/auth/authenticate', 'Auth\LoginController@authenticate');
 
+
+// TODO add restriction AMDin
+Route::get('/admin/stats', 'Admin\UserController@getStats');; //->middleware('jwt.auth:api');

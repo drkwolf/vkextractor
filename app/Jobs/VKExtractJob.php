@@ -42,7 +42,6 @@ class VKExtractJob implements ShouldQueue
   public function handle()
   {
     for($i=$this->start ; $i< $this->end; $i++) {
-      dump('progess:'.$i/$this->end.'% int user_id: '.$i);
       $this->get_user($i);
       $this->get_friends($i, $this->depth);
       $this->iter++;
@@ -53,7 +52,6 @@ class VKExtractJob implements ShouldQueue
   public function get_friends($id, $depth)
   {
     if ($depth == 0) return;
-    dump('depth '.$depth);
     $user = User::where('nt_id', $id)->first();
     $friends = $user->data->friends;
     $totFriends = sizeof($friends['items']);
@@ -61,7 +59,7 @@ class VKExtractJob implements ShouldQueue
     foreach ($friends['items'] as $key => $friend) {
       $dt = Carbon::now();
       $fid = $friend['id'];
-      dump('iter: '.$this->iter.' depth: '.$depth.' size:'.$key.'/'.sizeof($friends['items']).' id: '.$fid.' t: '.$dt->toTimeString());
+      dump('iter:'.$this->iter.' size:'.$key.'/'.sizeof($friends['items']).' id: '.$fid.' t: '.$dt->toTimeString());
       $this->dispProgress($depth);
       $this->get_user($fid);
     }

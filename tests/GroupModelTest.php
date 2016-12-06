@@ -51,5 +51,13 @@ class GroupModelTest extends TestCase
       \App\Models\Group::insert($insert);
     }
 
+  public function test_populate()
+  {
+    $root = storage_path('app/data/datamining.json');
+    $datam = new \App\Models\DataMining();
+    $result = json_encode($datam->populate());
+    File::put($root, $result);
+    }
+
 
 }
