@@ -56,11 +56,12 @@ class VKExtractJob implements ShouldQueue
     $user = User::where('nt_id', $id)->first();
     $friends = $user->data->friends;
     $totFriends = sizeof($friends['items']);
+    $this->setProgress($depth, $totFriends );
     foreach ($friends['items'] as $key => $friend) {
       $dt = Carbon::now();
       $fid = $friend['id'];
       dump('iter: '.$this->iter.' depth: '.$depth.' size:'.$key.'/'.sizeof($friends['items']).' id: '.$fid.' t: '.$dt->toTimeString());
-      $this->dispProgress($depth, $key, $totFriends,$dt->toTimeString() );
+      $this->dispProgress($depth);
       $this->get_user($fid);
     }
     $user->friends_loaded = true;
@@ -89,9 +90,12 @@ class VKExtractJob implements ShouldQueue
     }
   }
 
-  protected function dispProgress($depth, $current, $totFriends, $time) {
-    $this->progress[$depth]['current'] += $current+1;
+  protected  function setProgress($depth)
+  {
     $this->progress[$depth]['tot'] += $totFriends;
+  }
+  protected function dispProgress($depth, $time) {
+    $this->progress[$depth]['current'] += 1;
 
     $head = range(1, $this->depth);
     $head[$depth-1] .='*';
