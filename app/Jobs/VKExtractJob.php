@@ -57,14 +57,12 @@ class VKExtractJob implements ShouldQueue
     $friends = $user->data->friends;
     $totFriends = sizeof($friends['items']);
     $this->setProgress($depth, $totFriends );
-    $by_depth = $this->nodes_by_depty;
     foreach ($friends['items'] as $key => $friend) {
       $dt = Carbon::now();
       $fid = $friend['id'];
       dump('iter:'.$this->iter.' size:'.$key.'/'.sizeof($friends['items']).' id: '.$fid.' t: '.$dt->toTimeString());
       $this->dispProgress($depth);
       $this->get_user($fid);
-      if(!$by_depth--) break;
     }
     $user->friends_loaded = true;
     $this->get_foaf($friends, $depth-1);
@@ -72,7 +70,6 @@ class VKExtractJob implements ShouldQueue
   }
 
   public function get_foaf($friends, $depth) {
-    $by_depth = $this->nodes_by_depty;
     foreach ($friends['items'] as $friend) {
       $fid = $friend['id'];
       if ($depth) $this->setProgress($depth+1, 0, 1);
@@ -80,7 +77,6 @@ class VKExtractJob implements ShouldQueue
         $this->get_user($fid);
       }
       $this->get_friends($fid, $depth);
-      if(!$by_depth--) break;
     }
   }
 
