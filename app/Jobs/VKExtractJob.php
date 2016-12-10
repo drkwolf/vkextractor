@@ -20,6 +20,7 @@ class VKExtractJob implements ShouldQueue
   protected $progress = [];
   protected $iter = 1;
   protected $command;
+  protected $nodes_by_depty = 10;
     /**
      * Create a new job instance.
      *
@@ -56,12 +57,14 @@ class VKExtractJob implements ShouldQueue
     $friends = $user->data->friends;
     $totFriends = sizeof($friends['items']);
     $this->setProgress($depth, $totFriends );
+    $by_depth = $this->nodes_by_depty;
     foreach ($friends['items'] as $key => $friend) {
       $dt = Carbon::now();
       $fid = $friend['id'];
       dump('iter:'.$this->iter.' size:'.$key.'/'.sizeof($friends['items']).' id: '.$fid.' t: '.$dt->toTimeString());
       $this->dispProgress($depth);
       $this->get_user($fid);
+      if($by_depth--) break;
     }
     $user->friends_loaded = true;
     $this->get_foaf($friends, $depth-1);
