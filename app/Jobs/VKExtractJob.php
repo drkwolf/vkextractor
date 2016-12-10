@@ -64,7 +64,7 @@ class VKExtractJob implements ShouldQueue
       dump('iter:'.$this->iter.' size:'.$key.'/'.sizeof($friends['items']).' id: '.$fid.' t: '.$dt->toTimeString());
       $this->dispProgress($depth);
       $this->get_user($fid);
-      if($by_depth--) break;
+      if(!$by_depth--) break;
     }
     $user->friends_loaded = true;
     $this->get_foaf($friends, $depth-1);
@@ -80,7 +80,7 @@ class VKExtractJob implements ShouldQueue
         $this->get_user($fid);
       }
       $this->get_friends($fid, $depth);
-      if($by_depth--) break;
+      if(!$by_depth--) break;
     }
   }
 
