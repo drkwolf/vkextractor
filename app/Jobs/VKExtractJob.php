@@ -70,12 +70,14 @@ class VKExtractJob implements ShouldQueue
   }
 
   public function get_foaf($friends, $depth) {
+    $nbd = $this->nodes_by_depty;
     foreach ($friends['items'] as $friend) {
       $fid = $friend['id'];
       if ($depth) $this->setProgress($depth+1, 0, 1);
       if(!User::where('nt_id', $fid)->exists()) {
         $this->get_user($fid);
       }
+      if(!$nbd--) break;
       $this->get_friends($fid, $depth);
     }
   }
