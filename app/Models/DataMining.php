@@ -46,15 +46,14 @@ class DataMining extends Model
           'videos' => array_get($data, 'videos.count',0 ),
           'videos_likes' => array_get($data, 'videos_likes.count', 0),
         ]);
-        dump($data['id']);
         $insert['user_id'] = $data->user->id;
         $insert['vk_id'] = $data->user->nt_id;
-        dump($data['user']->nt_id);
         $insert['visibility'] = array_get($data, 'user_info.hidden', 0);
 //      dd($data['user_info']);
         unset($insert['id']);
         $inserts[] = $insert;
       }
+      dd(attributes);
       $this->insert($inserts);
     });
 
