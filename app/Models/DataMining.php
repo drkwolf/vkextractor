@@ -20,36 +20,47 @@ class DataMining extends Model
 
     $userData = Data::with('user')->get();
     $inserts = [];
+    $inser_counter = 0;
     foreach($userData as $data) {
       $insert = [];
-      dd($data['user']->id);
       foreach($attributes as $attribute) {
-        $insert['user_id'] = $data['user']->nt_id;
         $insert[$attribute] = array_has($data['user_info'], $attribute);
-        $insert['counts'] = [
-          'friends' => $data['friends']['count'],
-          'recent' => sizeof($data['friends_recent']),
-          'mutual' => sizeof($data['friends_mutual']),
-          'lists' => array_get($data, 'friends_lists.count',0 ),
-          'followers' => array_get($data,'followers.count',0),
-          'subscriptions' => array_get($data, 'subscriptions,count', 0),
-          'wall' => array_get($data, 'wall.count',0 ),
-          'posts' => array_get($data, 'posts.count', 0),
-          'posts_likes' => array_get($data,'posts_likes.count',0),
-          'photos' => array_get($data, 'photos.count',0),
-          'photos_likes' => array_get($data, 'photos_likes.count',0),
-          'videos' => array_get($data, 'videos.count',0 ),
-          'videos_likes' => array_get($data, 'videos_likes.count', 0),
-        ];
-        unset($insert['id']);
       }
+      $insert['photo_50'] = !preg_match('/images\/camera/', array_get($data, 'user_info.photo_50'));
+      $insert['counts'] = [
+        'friends' => array_get($data, 'friends.count',0),
+        'recent' => sizeof($data['friends_recent']),
+        'mutual' => sizeof($data['friends_mutual']),
+        'lists' => array_get($data, 'friends_lists.count',0 ),
+        'followers' => array_get($data,'followers.count',0),
+        'subscriptions' => array_get($data, 'subscriptions,count', 0),
+        'wall' => array_get($data, 'wall.count',0 ),
+        'posts_likes' => array_get($data,'posts_likes.count',0),
+        'photos' => !array_get($data, 'photos.count',0),
+        'photos_likes' => array_get($data, 'photos_likes.count',0),
+        'videos' => array_get($data, 'videos.count',0 ),
+        'videos_likes' => array_get($data, 'videos_likes.count', 0),
+      ];
+      dump($data['id']);
+      $insert['user_id'] = $data['user']->id;
+      $insert['vk_id'] = $data['user']->nt_id;
+      dump($data['user']->nt_id);
+      $insert['visibility'] = array_get($data, 'user_info.hidden', 0);
+//      dd($data['user_info']);
+      unset($insert['id']);
       $inserts[] = $insert;
+      // insert after 1000 row
+      if($inser_counter++ == 1000) {
+        $this->insert($inserts);
+        $inserts  = [];
+        $inser_counter = 0;
+      }
     }
 
-    $root = storage_path('app/data/datamining.json');
-    $result = json_encode($inserts);
-    File::put($root, $result);
-    return $inserts;
-
+    if(!empty($inserts)) $this->insert($inserts);
+//    $result = json_encode($inserts);
+//    $root = storage_path('app/data/datamining.json');
+//    File::put($root, $result);
   }
+
 }
