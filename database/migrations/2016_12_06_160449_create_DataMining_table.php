@@ -27,6 +27,7 @@ class CreateDataMiningTable extends Migration
         $table->boolean('home_town');
         $table->boolean('contacts');
         $table->boolean('about');
+        $table->boolean('photo_50');
         //taste
         $table->boolean('tv');
         $table->boolean('movies');

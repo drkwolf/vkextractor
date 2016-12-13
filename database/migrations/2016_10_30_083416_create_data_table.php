@@ -27,7 +27,7 @@ class CreateDataTable extends Migration
       $table->json('messages')->nullable();
       $table->json('wall')->nullable();
       //posts
-      $table->json('posts')->nullable();
+//      $table->json('posts')->nullable();
       $table->json('posts_reposts')->nullable();
       $table->json('posts_likes')->nullable();
       $table->json('posts_comments')->nullable();
