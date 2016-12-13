@@ -23,7 +23,10 @@ class DataMining extends Model
 //    $userData = Data::with('user')->get();
     $inser_counter = 0;
     $attributes =  Schema::getColumnListing($this->getTable());
-    $attributes =  array_except($attributes, ['created_at', 'updated_at', 'id', 'user_id']);
+    dump($attributes);
+    $attributes =  array_where($attributes, function($value, $key) {
+      return !in_array($value, ['created_at', 'updated_at', 'id', 'user_id']);
+    });
     Data::chunk(200, function($userData) use($attributes){
       $inserts = [];
       foreach($userData as $data) {
