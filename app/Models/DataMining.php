@@ -53,7 +53,7 @@ class DataMining extends Model
         unset($insert['id']);
         $inserts[] = $insert;
       }
-      dd(attributes);
+      dump($attributes);
       $this->insert($inserts);
     });
 
