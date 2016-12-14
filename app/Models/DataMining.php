@@ -23,7 +23,6 @@ class DataMining extends Model
 //    $userData = Data::with('user')->get();
     $inser_counter = 0;
     $attributes =  Schema::getColumnListing($this->getTable());
-    dump($attributes);
     $attributes =  array_where($attributes, function($value, $key) {
       return !in_array($value, ['created_at', 'updated_at', 'id', 'user_id']);
     });
@@ -34,6 +33,7 @@ class DataMining extends Model
         foreach($attributes as $attribute) {
           $insert[$attribute] = array_has($data['user_info'], $attribute);
         }
+        dump(array_get($data, 'user_info.photo_50'));
         $insert['photo_50'] = !preg_match('/images\/camera/', array_get($data, 'user_info.photo_50'));
         $insert['counts'] = json_encode([
           'friends' => array_get($data, 'friends.count',0),
@@ -56,8 +56,7 @@ class DataMining extends Model
         unset($insert['id']);
         $inserts[] = $insert;
       }
-      dump($attributes);
-      $this->insert($inserts);
+//      $this->insert($inserts);
     });
 
 
