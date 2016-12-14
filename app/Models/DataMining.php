@@ -36,6 +36,7 @@ class DataMining extends Model
           $insert[$attribute] = array_has($user_info, $attribute);
         }
 
+        $insert['visibility'] = !array_get($user_info, 'hidden', 0);
         $insert['photo_50'] = !preg_match('/images\/camera/', array_get($user_info, 'user_info.photo_50'));
         $insert['sex'] = array_get($user_info, 'sex');
         $insert['user_id'] = $data->user->id;
@@ -55,7 +56,6 @@ class DataMining extends Model
           'videos'          => array_get($data, 'videos.count',0 ),
           'videos_likes'    => array_get($data, 'videos_likes.count', 0),
         ]);
-        $insert['visibility'] = !array_get($data, 'user_info.hidden', 0);
         unset($insert['id']);
         $inserts[] = $insert;
       }
