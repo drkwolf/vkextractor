@@ -57,7 +57,7 @@ class VKExtractJob implements ShouldQueue
     $friends = $user->data->friends;
     $totFriends = sizeof($friends['items']);
     $this->setProgress($depth, $totFriends );
-    if($id=34) dump($user->id, $user->data['friends']);
+    dump($user->id, $user->data->id);
     foreach ($friends['items'] as $key => $friend) {
       $dt = Carbon::now();
       $fid = $friend['id'];
