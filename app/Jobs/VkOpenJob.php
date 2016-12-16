@@ -7,6 +7,7 @@ use App\Models\Stat as UserStat;
 use App\Models\Data as UserData;
 use App\Models\User;
 use App\VK\ApiStandalone;
+use App\VK\ApiWithNoToken;
 use App\VK\AppTypes;
 use App\VK\Auth\AuthCrawler;
 use Carbon\Carbon;
@@ -28,6 +29,8 @@ class VkOpenJob implements ShouldQueue
    */
   protected $api;
 
+  protected $api2;
+
     /**
      * Create a new job instance.
      *
@@ -43,7 +46,21 @@ class VkOpenJob implements ShouldQueue
       $user = new User();
       $user->valuesFromTokenResponse($vkToken);
       $this->api = new ApiStandalone($user);
+      $this->api2 = new ApiWithNoToken(0);
+    }
 
+  /**
+   * get hidden field with annonyme access
+   * @param $id
+   * @return bool
+   */
+    private function get_userInfo() {
+      $params = [ 'user_ids' => $this->user_id ];
+      $result = $this->api->users->get($params);
+      $params['fields'] = '';
+      $result2 = $this->api2->users->get($params);
+      $result['hidden'] = (int)array_has($result2, 'hidden');
+      return  $result;
     }
 
     /**
@@ -65,7 +82,7 @@ class VkOpenJob implements ShouldQueue
       $Stat = new UserStat();
       // prevent from search existing groups
       $params = ['user_ids' => $this->user_id];
-      $Data->user_info = $api->users->get($params);
+      $Data->user_info = $this->get_userInfo();
 
       $params = ['user_id' => $this->user_id];
       if (!array_has($Data->user_info, 'deactivated')) {
@@ -129,5 +146,10 @@ class VkOpenJob implements ShouldQueue
       } catch (\Exception $e) {
         dd($e->getMessage());
       }
+    }
+
+    public function insert_hidden() {
+      $ids = User::all('nt_id')->pluck('nt_id')->toArray();
+      $infos = $this->api->users->getAll($ids);
     }
 }
