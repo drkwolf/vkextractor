@@ -33,6 +33,21 @@ class Users extends ApiBase
     return isset($data[0])? $data[0]: $data;
   }
 
+  public function getAll($user_ids=[])
+  {
+    $len = sizeof($user_ids);
+    $results = [];
+    for($i=0; $i < $len; $i+=1000) {
+      $params = [
+        'user_ids' => array_slice($user_ids, $i, 1000),
+        'fields' => ''
+      ];
+      $results = array_merge($results, $this->get($params));
+    }
+    return $results;
+  }
+
+
   public function getSubscriptions(Array $params = [])
   {
     $default = [
