@@ -209,8 +209,8 @@ abstract class ClientAbstract implements ClientInterface
     } catch(GuzzleException $e) {
       // TODO serialise obeset then resume after connection comes
 //      $this->failureLog->error($e);
-      $this->failureLog->error($default);
-      $this->failureLog->error($params);
+      $this->failureLog->error(json_encode($default));
+      $this->failureLog->error(json_encode($params));
       throw $e;
     }
 
