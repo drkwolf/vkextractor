@@ -150,6 +150,9 @@ class VkOpenJob implements ShouldQueue
 
     public function insert_hidden() {
       $ids = User::all('nt_id')->pluck('nt_id')->toArray();
-      $infos = $this->api->users->getAll($ids);
+      $infos = $this->api2->users->getAll($ids);
+      foreach($infos as $info) {
+        dump($info['id']);
+      }
     }
 }
