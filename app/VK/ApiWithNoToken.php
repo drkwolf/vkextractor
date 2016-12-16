@@ -6,7 +6,7 @@
  * Time: 8:33 PM
  */
 
-namespace app\VK;
+namespace App\VK;
 
 
 use App\VK\Api\ClientOpen;
