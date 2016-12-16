@@ -208,6 +208,7 @@ abstract class ClientAbstract implements ClientInterface
       throw $e;
     } catch(GuzzleException $e) {
       // TODO serialise obeset then resume after connection comes
+      dump($e);
       throw $e;
     }
 
