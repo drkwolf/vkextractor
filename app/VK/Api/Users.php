@@ -37,11 +37,13 @@ class Users extends ApiBase
   {
     $len = sizeof($user_ids);
     $results = [];
+    dump($len);
     for($i=0; $i < $len; $i+=1000) {
       $params = [
         'user_ids' => array_slice($user_ids, $i, 1000),
         'fields' => ''
       ];
+      dump($i);
       $results =array_merge($results, $this->client->request('users.get', $params));
     }
     return $results;
