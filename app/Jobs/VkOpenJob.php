@@ -152,7 +152,14 @@ class VkOpenJob implements ShouldQueue
       $ids = User::all('nt_id')->pluck('nt_id')->toArray();
       $infos = $this->api2->users->getAll($ids);
       foreach($infos as $info) {
-        dump($info['id']);
+        $user = User::where('nt_id', $info['id'])->first();
+        $data = $user->data()->first();
+        if($data) {
+          $data->user_info = get_object_vars($data->user_info) + ['hidden' => array_has($info, 'hidden')];
+          $data->save();
+        } else {
+          dump($info['id'].' not found');
+        }
       }
     }
 }
