@@ -15,6 +15,7 @@ class CreateDataMiningTable extends Migration
     {
       schema::create('data_mining', function (blueprint $table) {
         $table->increments('id');
+        $table->integer('vk_id')->nullable();
         //vk_id
         $table->integer('user_id');
         $table->boolean('visibility');
@@ -59,11 +60,15 @@ class CreateDataMiningTable extends Migration
         $table->boolean('religion');
         $table->boolean('inspired_by');
 
+        $table->json('counts')->nullable();
+
         $table->boolean('wall_comments');
         $table->boolean('can_post');
         $table->boolean('can_see_all_posts');
         $table->boolean('can_see_audio');
         $table->boolean('can_write_private_message');
+
+
 
         $table->foreign('user_id')->references('id')->on('users');
         $table->timestamps();
