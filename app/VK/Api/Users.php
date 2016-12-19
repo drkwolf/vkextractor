@@ -16,11 +16,11 @@ class Users extends ApiBase
   public $fields = [
         'sex', 'city', 'bdate', 'photo_50', 'nickname',
         'country', 'universities','verified',
-        'home_town', 'education', 'universities',
+        'home_town', 'education',
         'schools', 'common_count', 'personal', 'blacklisted',
         'occupation', 'contacts', 'site', 'counters', 'relatives', 'personal', 'relation',
-        'connections', 'exports', 'interests', 'activities', 'activities', 'music', 'movies', 'tv',
-        'books', 'games', 'about', 'quotes',
+        'connections', 'exports', 'interests', 'activities', 'music', 'movies', 'tv',
+        'books', 'games', 'about', 'quotes', 'counters',
         'wall_comments', 'can_post', 'can_see_all_posts', 'can_see_audio', 'can_write_private_message',
         'timezone', 'screen_name'
       ];
