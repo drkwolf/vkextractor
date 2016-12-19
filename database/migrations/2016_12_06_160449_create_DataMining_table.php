@@ -20,6 +20,8 @@ class CreateDataMiningTable extends Migration
         $table->boolean('visibility');
         $table->boolean('first_name');
         $table->boolean('last_name');
+        $table->boolean('nickname');
+        $table->boolean('screen_name');
         $table->boolean('sex');
         $table->boolean('bdate');
         $table->boolean('city');
@@ -28,6 +30,9 @@ class CreateDataMiningTable extends Migration
         $table->boolean('contacts');
         $table->boolean('about');
         $table->boolean('photo_50');
+        $table->boolean('site');
+        $table->boolean('connections');
+        $table->boolean('exports');
         //taste
         $table->boolean('tv');
         $table->boolean('movies');
@@ -43,7 +48,7 @@ class CreateDataMiningTable extends Migration
         $table->boolean('relatives');
 
         $table->boolean('relation');
-        $table->boolean('occupations');
+        $table->boolean('occupation');
 
         $table->boolean('political');
         $table->boolean('langs');
@@ -53,7 +58,12 @@ class CreateDataMiningTable extends Migration
         $table->boolean('people_main');
         $table->boolean('religion');
         $table->boolean('inspired_by');
-        $table->boolean('photo_50');
+
+        $table->boolean('wall_comments');
+        $table->boolean('can_post');
+        $table->boolean('can_see_all_posts');
+        $table->boolean('can_see_audio');
+        $table->boolean('can_write_private_message');
 
         $table->foreign('user_id')->references('id')->on('users');
         $table->timestamps();
