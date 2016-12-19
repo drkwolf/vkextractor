@@ -49,12 +49,15 @@ class DataMining extends Model
     if(array_has($user_info, 'deactivated')) return; // skip deactivated
 
     foreach($attributes as $attribute) {
-      $insert[$attribute] = !empty(array_get($user_info, $attribute));
+      $value =array_get($user_info, $attribute, null);
+      $insert[$attribute] =  ($value !== null && $value !== "");
     }
 
     if(array_has($user_info, 'personal')) {
       foreach($personals as $key => $personal) {
-        $insert[$personal] = !empty(array_get($user_info, 'personal.'.$personal));
+      $value =array_get($user_info, 'personal.'.$personal, null);
+      dump($personal.' '.$value);
+      $insert[$personal] =  ($value !== null && $value !== "");
       }
     }
 
