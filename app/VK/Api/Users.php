@@ -13,6 +13,17 @@ use App\VK\Api\Params\UsersGetSubscriptionsParams;
 
 class Users extends ApiBase
 {
+  public $fields = [
+        'sex', 'city', 'bdate', 'photo_50', 'nickname',
+        'country', 'universities','verified',
+        'home_town', 'education', 'universities',
+        'schools', 'common_count', 'personal', 'blacklisted',
+        'occupation', 'contacts', 'site', 'counters', 'relatives', 'personal', 'relation',
+        'connections', 'exports', 'interests', 'activities', 'activities', 'music', 'movies', 'tv',
+        'books', 'games', 'about', 'quotes',
+        'wall_comments', 'can_post', 'can_see_all_posts', 'can_see_audio', 'can_write_private_message',
+        'timezone', 'screen_name'
+      ];
 
   /**
    * @param array $params
@@ -23,8 +34,7 @@ class Users extends ApiBase
   public function get(Array $params = []) {
     $default = [
       'user_ids' => null,
-      'fields' => ['sex', 'city', 'photo_50', 'country', 'universities','verified', 'home_town', 'education', 'universities',
-        'schools', 'common_count', 'personal', 'blacklisted'],
+      'fields' => $this->fields,
       'name_case' => 'nom',
     ];
 
@@ -41,10 +51,11 @@ class Users extends ApiBase
     for($i=0; $i < $len; $i+=1000) {
       $params = [
         'user_ids' => array_slice($user_ids, $i, 1000),
-        'fields' => ''
+        'fields' => $this->fields,
       ];
-      dump($i);
+//      dump(sizeof($params['user_ids']));
       $results =array_merge($results, $this->client->request('users.get', $params));
+      dump(sizeof($results));
     }
     return $results;
   }
