@@ -66,6 +66,12 @@ class DataMining extends Model
     $insert['sex'] = array_get($user_info, 'sex');
     $insert['user_id'] = $data->user->id;
     $insert['vk_id'] = $data->user->nt_id;
+    $insert['wall_comments'] = array_get($user_info, 'wall_comments');
+    $insert['can_post']= array_get($user_info, 'can_post');;
+    $insert['can_see_all_posts']= array_get($user_info, 'can_see_all_posts');;
+    $insert['can_see_audio']= array_get($user_info, 'can_see_audio');;
+    $insert['can_write_private_message']= array_get($user_info, 'can_write_private_message');;
+
 
     $insert['counts'] = [
       'friends'         => array_get($data, 'friends.count',0),
