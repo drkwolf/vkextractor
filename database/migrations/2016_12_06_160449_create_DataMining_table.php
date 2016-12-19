@@ -60,7 +60,7 @@ class CreateDataMiningTable extends Migration
         $table->boolean('religion');
         $table->boolean('inspired_by');
 
-        $table->json('counts')->nullable();
+        $table->longText('counts')->nullable();
 
         $table->boolean('wall_comments');
         $table->boolean('can_post');
