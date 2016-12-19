@@ -57,7 +57,7 @@ class DataMining extends Model
       $p = $user_info['personal'];
       dump($p);
       foreach($personals as $key => $personal) {
-      $value =array_get($p, $personal);
+      $value = array_has($p, $personal);
         dump($personal.' '.$value);
       $insert[$personal] =  ($value !== null && $value !== "");
       }
