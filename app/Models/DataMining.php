@@ -20,14 +20,11 @@ class DataMining extends Model
 
   public function populate() {
 
-    $attributes =  Schema::getColumnListing($this->getTable());
-    $attributes =  array_where($attributes, function($value, $key) {
-      return !in_array($value, ['created_at', 'updated_at', 'id', 'user_id']);
-    });
-    Data::chunk(200, function($userData) use($attributes){
+    Data::chunk(200, function($userData) {
       $inserts = [];
       foreach($userData as $data) {
-        $inserts[] = $this->translate_data($data);
+        $ret = $this->translate_data($data);
+        if($ret) $inserts[] = $ret;  // get only active users
       }
 
       $this->insert($inserts);
@@ -38,8 +35,10 @@ class DataMining extends Model
   public function translate_data($data) {
     $attributes =  Schema::getColumnListing($this->getTable());
     $attributes =  array_where($attributes, function($value, $key) {
-      return !in_array($value, ['created_at', 'updated_at', 'id', 'user_id']);
+      return !in_array($value, ['created_at', 'updated_at', 'id', 'user_id', 'vk_id']);
     });
+
+    $personals = [ 'political', 'langs', 'religion', 'smoking', 'alcohol', 'live_main', 'people_main', 'inspired_by', ];
 
     $insert = [];
     $user_info = (array)$data['user_info'];
@@ -50,6 +49,12 @@ class DataMining extends Model
       $insert[$attribute] = array_has($user_info, $attribute);
     }
 
+    if(array_has($user_info, 'personal')) {
+      foreach($personals as $personal) {
+        $insert[$personal] = array_has($user_info, 'personal.'.$personal);
+      }
+    }
+
     $insert['visibility'] = !array_has($user_info, 'hidden');
 //    dump($user_info);
     $insert['photo_50'] = !preg_match('/images\/camera/', array_get($user_info, 'user_info.photo_50'));
@@ -57,7 +62,7 @@ class DataMining extends Model
     $insert['user_id'] = $data->user->id;
     $insert['vk_id'] = $data->user->nt_id;
 
-    $insert['counts'] = json_encode([
+    $insert['counts'] = [
       'friends'         => array_get($data, 'friends.count',0),
       'recent'          => sizeof($data['friends_recent']),
       'mutual'          => sizeof($data['friends_mutual']),
@@ -70,7 +75,9 @@ class DataMining extends Model
       'photos_likes'    => array_get($data, 'photos_likes.count',0),
       'videos'          => array_get($data, 'videos.count',0 ),
       'videos_likes'    => array_get($data, 'videos_likes.count', 0),
-    ]);
+    ];
+    $insert['counts'] = array_merge(array_get($user_info, 'counters', []), $insert['counts']);
+    $insert['counts'] = json_encode($insert['counts']);
     unset($insert['id']);
 
     return $insert;
