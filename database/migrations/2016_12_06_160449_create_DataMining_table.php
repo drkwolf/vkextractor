@@ -52,14 +52,14 @@ class CreateDataMiningTable extends Migration
         $table->boolean('occupation');
 
         //personal
-        $table->boolean('`personal.political`');
-        $table->boolean('`personal.langs`');
-        $table->boolean('`personal.religion`');
-        $table->boolean('`personal.smoking`');
-        $table->boolean('`personal.alcohol`');
-        $table->boolean('`personal.live_main`');
-        $table->boolean('`personal.people_main`');
-        $table->boolean('`personal.inspired_by`');
+        $table->boolean('political');
+        $table->boolean('langs');
+        $table->boolean('religion');
+        $table->boolean('smoking');
+        $table->boolean('alcohol');
+        $table->boolean('live_main');
+        $table->boolean('people_main');
+        $table->boolean('inspired_by');
 
         $table->longText('counts')->nullable();
 
