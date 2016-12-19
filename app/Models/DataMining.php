@@ -54,7 +54,7 @@ class DataMining extends Model
     }
 
     if(array_has($user_info, 'personal')) {
-      $p = $user_info['peronal'];
+      $p = $user_info['personal'];
       dump($p);
       foreach($personals as $key => $personal) {
       $value =array_get($p, $personal);
