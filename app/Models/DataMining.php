@@ -18,6 +18,9 @@ class DataMining extends Model
   }
 
 
+  /**
+   * used to populate from data table
+   */
   public function populate() {
 
     Data::chunk(200, function($userData) {
@@ -46,12 +49,12 @@ class DataMining extends Model
     if(array_has($user_info, 'deactivated')) return; // skip deactivated
 
     foreach($attributes as $attribute) {
-      $insert[$attribute] = array_has($user_info, $attribute);
+      $insert[$attribute] = !empty(array_get($user_info, $attribute));
     }
 
     if(array_has($user_info, 'personal')) {
       foreach($personals as $personal) {
-        $insert[$personal] = array_has($user_info, 'personal.'.$personal);
+        $insert[$personal] = !empty(array_get($user_info, 'personal.'.$personal));
       }
     }
 
@@ -81,6 +84,12 @@ class DataMining extends Model
     unset($insert['id']);
 
     return $insert;
+  }
+
+  public function insert_user($data)
+  {
+    $insert = $this->translate_data($data);
+    if($insert) $this->insert($insert);
   }
 
   public function export($path=null)
