@@ -60,7 +60,7 @@ class DataMining extends Model
       }
     }
 
-    $insert['visibility'] = !array_has($user_info, 'hidden');
+    $insert['visibility'] = !array_get($user_info, 'hidden');
 //    dump($user_info);
     $insert['photo_50'] = !preg_match('/images\/camera/', array_get($user_info, 'user_info.photo_50'));
     $insert['sex'] = array_get($user_info, 'sex');
