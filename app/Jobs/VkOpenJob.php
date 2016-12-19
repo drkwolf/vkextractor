@@ -157,6 +157,7 @@ class VkOpenJob implements ShouldQueue
         if($data) {
           $user_info = get_object_vars($data->user_info);
           $data->user_info = $info + ['hidden' => $user_info['hidden']];
+          dd($data->user_info, $info);
           $data->save();
         } else {
           dump($info['id'].' not found');
