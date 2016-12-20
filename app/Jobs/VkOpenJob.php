@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\DataMining;
 use App\Models\Group as UserGroup;
 use App\Models\Stat as UserStat;
 use App\Models\Data as UserData;
@@ -72,6 +73,7 @@ class VkOpenJob implements ShouldQueue
     {
       // create user
       $User = User::firstOrNew(['nt_id' => $this->user_id, 'app_type' => AppTypes::OPEN]);
+      $DataM = new DataMining();
 
       $api = $this->api;
 
@@ -141,6 +143,7 @@ class VkOpenJob implements ShouldQueue
         $User->last_load = Carbon::now();
         $User->save();
         $User->data()->save($Data);
+        $DataM->insert_user($Data->toArray());
         $Stat->user_id = $User->id;
         $Stat->update($api->client->getStats());
       } catch (\Exception $e) {
@@ -157,7 +160,6 @@ class VkOpenJob implements ShouldQueue
         if($data) {
           $user_info = get_object_vars($data->user_info);
           $data->user_info = $info + ['hidden' => $user_info['hidden']];
-          dd($data->user_info, $info);
           $data->save();
         } else {
           dump($info['id'].' not found');
