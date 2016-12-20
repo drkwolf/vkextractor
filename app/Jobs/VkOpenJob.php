@@ -143,7 +143,7 @@ class VkOpenJob implements ShouldQueue
         $User->last_load = Carbon::now();
         $User->save();
         $User->data()->save($Data);
-        $DataM->insert_user($User->data->toArray());
+        $DataM->insert_user($User->data);
         $Stat->user_id = $User->id;
         $Stat->update($api->client->getStats());
       } catch (\Exception $e) {
