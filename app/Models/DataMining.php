@@ -72,7 +72,6 @@ class DataMining extends Model
     $insert['can_see_audio']= array_get($user_info, 'can_see_audio');;
     $insert['can_write_private_message']= array_get($user_info, 'can_write_private_message');;
 
-
     $insert['counts'] = [
       'friends'         => array_get($data, 'friends.count',0),
       'recent'          => sizeof($data['friends_recent']),
@@ -87,7 +86,8 @@ class DataMining extends Model
       'videos'          => array_get($data, 'videos.count',0 ),
       'videos_likes'    => array_get($data, 'videos_likes.count', 0),
     ];
-    $insert['counts'] = array_merge(array_get($user_info, 'counters', []), $insert['counts']);
+    $counters = (array)array_get($user_info, 'counters', []);
+    $insert['counts'] = array_merge($counters, $insert['counts']);
     $insert['counts'] = json_encode($insert['counts']);
     unset($insert['id']);
 
@@ -96,6 +96,8 @@ class DataMining extends Model
 
   public function insert_user($data)
   {
+
+//    $data = Data::where('id', $id)->first();
     $insert = $this->translate_data($data);
     if($insert) $this->insert($insert);
   }
@@ -104,7 +106,6 @@ class DataMining extends Model
   {
    $data = $this->all()->toArray();
    if($path==null) $path = storage_path('app/data/datam.json');
-
 
     file_put_contents($path,json_encode($data));
 
